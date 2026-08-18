@@ -172,75 +172,97 @@ export async function getWeapons(): Promise<WeaponData[]> {
   return res.json();
 }
 
+const DEFAULT_CAREER_DATA: CareerData = {
+  player: {
+    name: 'Chronos',
+    tag: 'VALO',
+    title: 'Radiant Analyst',
+    accountLevel: 184,
+    cardUrl: 'https://media.valorant-api.com/playercards/33c7c404-4401-a0dc-1926-2d887a02c892/wideart.png',
+    smallCardUrl: 'https://media.valorant-api.com/playercards/33c7c404-4401-a0dc-1926-2d887a02c892/smallart.png',
+    avatarUrl: 'https://media.valorant-api.com/playercards/33c7c404-4401-a0dc-1926-2d887a02c892/displayicon.png'
+  },
+  rank: {
+    tier: 25,
+    tierName: 'Immortal 2',
+    tierDivision: 2,
+    rr: 78,
+    maxRr: 100,
+    peakTier: 26,
+    peakTierName: 'Immortal 3 (185 RR)',
+    tierIcon: 'https://media.valorant-api.com/competitivetiers/03621f52-4cd8-5eab-4e09-9889632f576d/25/largeicon.png',
+    leaderboardRank: 4120
+  },
+  stats: {
+    winRate: 58.4,
+    wins: 83,
+    losses: 59,
+    totalMatches: 142,
+    kd: 1.28,
+    kills: 2740,
+    deaths: 2140,
+    assists: 892,
+    headshotPct: 29.4,
+    bodyPct: 64.2,
+    legPct: 6.4,
+    damagePerRound: 162.8,
+    combatScore: 254.6,
+    clutchSuccessPct: 34.2,
+    firstBloodsPerMatch: 3.8,
+    aces: 9,
+    flawlessRounds: 42
+  },
+  recentForm: ['W', 'W', 'L', 'W', 'W', 'W', 'L', 'W'],
+  topAgents: [
+    {
+      agentName: 'Jett',
+      role: 'Duelist',
+      matches: 54,
+      winRate: 63.0,
+      kd: 1.36,
+      adr: 174.5,
+      iconUrl: 'https://media.valorant-api.com/agents/add6443a-41bd-e414-f6ad-e58d267f4e95/displayicon.png',
+      portraitUrl: 'https://media.valorant-api.com/agents/add6443a-41bd-e414-f6ad-e58d267f4e95/fullportrait.png'
+    },
+    {
+      agentName: 'Omen',
+      role: 'Controller',
+      matches: 38,
+      winRate: 57.9,
+      kd: 1.18,
+      adr: 148.2,
+      iconUrl: 'https://media.valorant-api.com/agents/8e253930-4c05-31dd-1b6c-968525494517/displayicon.png',
+      portraitUrl: 'https://media.valorant-api.com/agents/8e253930-4c05-31dd-1b6c-968525494517/fullportrait.png'
+    }
+  ],
+  source: 'mock'
+};
+
 export async function getCareer(): Promise<CareerData> {
   try {
     const res = await apiFetch(`/player-career`);
     if (res.ok) return res.json();
   } catch (err) {
-    // Check for paired companion session
     try {
       const saved = localStorage.getItem('valorecon_companion_session');
       if (saved) {
         const session = JSON.parse(saved);
         if (session.connected && session.gameName) {
           return {
+            ...DEFAULT_CAREER_DATA,
             player: {
+              ...DEFAULT_CAREER_DATA.player,
               name: session.gameName,
               tag: session.gameTag || 'LIVE',
-              level: 142,
-              rank: 'Diamond 2',
-              tier: 22,
-              rr: 68,
-              leaderboardRank: 1420,
-              cardSmall: 'https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/smallart.png',
-              cardWide: 'https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/wideart.png',
               title: 'Radiant In Training'
             },
-            seasonalRank: {
-              currentSeason: 'Episode 9 Act 2',
-              peakRank: 'Ascendant 1',
-              peakSeason: 'Episode 8 Act 3',
-              wins: 28,
-              gamesPlayed: 52,
-              winRate: 53.8,
-              kdRatio: 1.18,
-              headshotPct: 24.2,
-              damagePerRound: 148.6,
-              combatScoreAvg: 232.4
-            },
             source: 'live'
-          } as CareerData;
+          };
         }
       }
     } catch {}
   }
-    return {
-      player: {
-        name: 'UrMomRpdMe',
-        tag: 'help',
-        level: 142,
-        rank: 'Diamond 2',
-        tier: 22,
-        rr: 68,
-        leaderboardRank: 1420,
-        cardSmall: 'https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/smallart.png',
-        cardWide: 'https://media.valorant-api.com/playercards/9fb348bc-41a0-91ad-8a3e-818035c4e561/wideart.png',
-        title: 'Radiant In Training'
-      },
-      seasonalRank: {
-        currentSeason: 'Episode 9 Act 2',
-        peakRank: 'Ascendant 1',
-        peakSeason: 'Episode 8 Act 3',
-        wins: 28,
-        gamesPlayed: 52,
-        winRate: 53.8,
-        kdRatio: 1.18,
-        headshotPct: 24.2,
-        damagePerRound: 148.6,
-        combatScoreAvg: 232.4
-      },
-      source: 'mock'
-    } as CareerData;
+  return DEFAULT_CAREER_DATA;
 }
 
 export async function getMatches(): Promise<MatchSummary[]> {

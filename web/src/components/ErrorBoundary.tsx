@@ -29,13 +29,17 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   private handleReset = () => {
-    this.setState({ hasError: false, error: null, errorInfo: null });
+    try {
+      this.setState({ hasError: false, error: null, errorInfo: null });
+    } catch {}
     window.location.reload();
   };
 
   private handleGoHome = () => {
-    this.setState({ hasError: false, error: null, errorInfo: null });
-    window.location.href = '/';
+    try {
+      this.setState({ hasError: false, error: null, errorInfo: null });
+    } catch {}
+    window.location.href = '/companion';
   };
 
   public render() {
