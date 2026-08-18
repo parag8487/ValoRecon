@@ -243,25 +243,53 @@ tbody tr:hover { background: var(--surface-2); }
   .app-container {
     height: 100vh;
     height: 100dvh;
+    overflow: hidden;
   }
   .main-viewport {
     height: 100vh;
     height: 100dvh;
+    overflow: hidden;
   }
   .content-area {
-    padding: 14px 12px calc(88px + env(safe-area-inset-bottom, 16px)) 12px !important;
-    scroll-padding-bottom: calc(88px + env(safe-area-inset-bottom, 16px)) !important;
+    padding: 14px 12px calc(80px + env(safe-area-inset-bottom, 16px)) 12px !important;
+    scroll-padding-bottom: calc(80px + env(safe-area-inset-bottom, 16px)) !important;
+  }
+  .content-area:has(.coach-screen) {
+    padding: 10px 10px calc(76px + env(safe-area-inset-bottom, 12px)) 10px !important;
+    overflow: hidden !important;
   }
   .app-topbar {
     padding: 0 12px !important;
     min-height: 50px !important;
   }
-  .topbar-title span + span {
+  .topbar-subtitle-text {
     display: none !important;
   }
+  .topbar-wallet-section {
+    display: none !important;
+  }
+  .topbar-title-heading {
+    font-size: 13px !important;
+    max-width: 120px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+  .topbar-riot-pill {
+    max-width: 180px !important;
+    padding: 3px 8px !important;
+    font-size: 10.5px !important;
+  }
+  .riot-status-text {
+    max-width: 130px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
   .coach-screen {
-    height: calc(100vh - 146px) !important;
-    height: calc(100dvh - 146px) !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
   }
   .coach-message {
     max-width: 100% !important;
@@ -341,6 +369,19 @@ tbody tr:hover { background: var(--surface-2); }
   .settings-grid {
     grid-template-columns: 1fr !important;
     gap: 16px !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .content-area:has(.coach-screen) {
+    padding: 16px 24px !important;
+    overflow: hidden !important;
+    height: calc(100vh - 56px) !important;
+  }
+  .coach-screen {
+    height: 100% !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
   }
 }
 

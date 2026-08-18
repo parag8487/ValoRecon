@@ -383,17 +383,21 @@ export const CoachScreen: React.FC = () => {
     <div className="animate-fade-in coach-screen" style={{
       display: 'flex',
       flexDirection: 'column',
-      height: 'calc(100vh - 100px)',
-      gap: '16px'
+      height: '100%',
+      maxHeight: '100%',
+      minHeight: 0,
+      overflow: 'hidden',
+      gap: '10px'
     }}>
-      {/* Header Bar */}
-      <div className="glass-panel" style={{
-        padding: '14px 20px',
+      {/* Header Bar — Pinned */}
+      <div className="glass-panel coach-screen-header" style={{
+        padding: '12px 18px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '10px'
+        gap: '8px',
+        flexShrink: 0
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, flex: '1 1 420px' }}>
           <div style={{
@@ -748,7 +752,8 @@ export const CoachScreen: React.FC = () => {
         alignItems: 'center',
         gap: '8px',
         overflowX: 'auto',
-        paddingBottom: '4px'
+        paddingBottom: '2px',
+        flexShrink: 0
       }}>
         <span style={{
           fontSize: '11px',
@@ -784,12 +789,13 @@ export const CoachScreen: React.FC = () => {
       </div>
 
       {/* Input Box */}
-      <div className="glass-panel" style={{
+      <div className="glass-panel coach-input-panel" style={{
         padding: '8px 12px',
         display: 'flex',
         alignItems: 'center',
         gap: '8px',
-        border: '1px solid rgba(255, 70, 85, 0.3)'
+        border: '1px solid rgba(255, 70, 85, 0.3)',
+        flexShrink: 0
       }}>
         <input
           type="file"

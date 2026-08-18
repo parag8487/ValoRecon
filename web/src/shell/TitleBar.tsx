@@ -111,43 +111,47 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenDrawer }) => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '0 24px',
+      padding: '0 20px',
       userSelect: 'none',
       zIndex: 90,
-      flexShrink: 0
+      flexShrink: 0,
+      gap: '12px'
     }}>
-      {/* Title & Subtitle with Monogram */}
-      <div className="topbar-title" style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
+      {/* Left: Title & Subtitle with Monogram */}
+      <div className="topbar-left-section" style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flexShrink: 1 }}>
         {onOpenDrawer && (
           <button
             className="mobile-header-menu-btn"
             onClick={onOpenDrawer}
             style={{
-              display: 'none',
               background: 'none',
               border: 'none',
               color: 'var(--text-primary)',
               padding: '6px',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              display: 'none'
             }}
+            aria-label="Open navigation menu"
           >
-            <Menu size={22} />
+            <Menu size={20} />
           </button>
         )}
         <ValoReconMonogram size={20} />
 
-        <div style={{ display: 'flex', alignItems: 'baseline', minWidth: 0, gap: '8px', flexWrap: 'wrap' }}>
-          <span style={{
+        <div style={{ display: 'flex', alignItems: 'baseline', minWidth: 0, gap: '8px' }}>
+          <span className="topbar-title-heading" style={{
             fontFamily: 'var(--font-heading)',
-            fontSize: '15px',
+            fontSize: '14.5px',
             fontWeight: 700,
             color: '#ffffff',
-            letterSpacing: '0.06em',
-            whiteSpace: 'nowrap'
+            letterSpacing: '0.05em',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
           }}>
             {routeInfo.title}
           </span>
-          <span style={{
+          <span className="topbar-subtitle-text" style={{
             fontSize: '11px',
             color: 'var(--text-muted)',
             fontFamily: 'var(--font-heading)',
@@ -161,11 +165,12 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenDrawer }) => {
         </div>
       </div>
 
-      {/* Riot Account Connection Indicator & Match Pill */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      {/* Right Container: Riot Status Pill + Live Match + Currencies */}
+      <div className="topbar-right-section" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
         {/* Riot Account Status Pill */}
         <div
-          title={riotStatus.connected ? `Connected to ${riotStatus.gameName}#${riotStatus.gameTag} (${riotStatus.region?.toUpperCase()})` : 'Local Riot Client lockfile offline'}
+          className="topbar-riot-pill"
+          title={riotStatus.connected ? `Connected to ${riotStatus.gameName}#${riotStatus.gameTag} (${riotStatus.region?.toUpperCase() || 'AP'})` : 'Local Riot Client lockfile offline'}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -191,7 +196,9 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenDrawer }) => {
               ? 'var(--accent-green)'
               : riotStatus.gameRunning
               ? 'var(--accent-gold)'
-              : 'var(--text-muted)'
+              : 'var(--text-muted)',
+            whiteSpace: 'nowrap',
+            flexShrink: 0
           }}
         >
           <span
@@ -205,41 +212,46 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenDrawer }) => {
                 : riotStatus.gameRunning
                 ? 'var(--accent-gold)'
                 : 'var(--accent-red)',
-              display: 'inline-block'
+              display: 'inline-block',
+              flexShrink: 0
             }}
           />
           {riotStatus.connected ? (
-            <span>
+            <span className="riot-status-text">
               CONNECTED: {riotStatus.gameName}#{riotStatus.gameTag}
             </span>
           ) : riotStatus.gameRunning ? (
-            <span>RIOT CLIENT DETECTED</span>
+            <span>RIOT DETECTED</span>
           ) : (
-            <span>RIOT CLIENT OFFLINE</span>
+            <span>CLIENT OFFLINE</span>
           )}
         </div>
 
-        {/* Live Match Indicator — only shown when actually in a game */}
+        {/* Live Match Indicator */}
         {live.inGame && (
           <div
             onClick={() => navigate('/live-match')}
+            className="topbar-live-pill"
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
+              gap: '6px',
               backgroundColor: 'rgba(255, 70, 85, 0.12)',
               border: '1px solid rgba(255, 70, 85, 0.3)',
               padding: '3px 10px',
               borderRadius: '20px',
               cursor: 'pointer',
-              transition: 'all 0.15s ease'
+              transition: 'all 0.15s ease',
+              whiteSpace: 'nowrap',
+              flexShrink: 0
             }}
           >
             <span className="pulse-dot" style={{
               width: '6px',
               height: '6px',
               borderRadius: '50%',
-              backgroundColor: 'var(--accent-red)'
+              backgroundColor: 'var(--accent-red)',
+              flexShrink: 0
             }} />
             <span style={{
               fontFamily: 'var(--font-heading)',
@@ -248,43 +260,35 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenDrawer }) => {
               color: 'var(--accent-red)',
               letterSpacing: '0.05em'
             }}>
-              MATCH: {live.map?.toUpperCase()} {live.score ? `(${live.score})` : ''}
+              LIVE: {live.map?.toUpperCase() || 'MATCH'} {live.score ? `(${live.score})` : ''}
             </span>
           </div>
         )}
-      </div>
 
-      {/* Right Currencies + connection-gated */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
-        {/* Currencies — only when live wallet data is available */}
-        {wallet && wallet.source === 'live' ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            {[
-              { label: 'V', val: wallet.vp, bg: 'rgba(255, 70, 85, 0.2)', col: 'var(--accent-red)' },
-              { label: 'R', val: wallet.rp, bg: 'rgba(248, 183, 62, 0.2)', col: 'var(--accent-gold)' },
-              { label: 'K', val: wallet.kc, bg: 'rgba(0, 240, 255, 0.2)', col: 'var(--accent-cyan)' },
-            ].map((c) => (
-              <div key={c.label} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <span style={{
-                  width: '18px', height: '18px', borderRadius: '50%',
-                  backgroundColor: c.bg, color: c.col, fontSize: '10px', fontWeight: 800,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: 'var(--font-heading)'
-                }}>{c.label}</span>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', fontWeight: 600, color: '#fff' }}>
-                  {c.val.toLocaleString()}
-                </span>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <span style={{
-            fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-heading)',
-            letterSpacing: '0.04em'
-          }}>
-            {riotStatus.connected ? 'SYNCING WALLET…' : 'WALLET UNAVAILABLE — CLIENT OFFLINE'}
-          </span>
-        )}
+        {/* Currencies — hidden on small mobile view */}
+        <div className="topbar-wallet-section" style={{ display: 'flex', alignItems: 'center', gap: '14px', flexShrink: 0 }}>
+          {wallet && wallet.source === 'live' ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              {[
+                { label: 'V', val: wallet.vp, bg: 'rgba(255, 70, 85, 0.2)', col: 'var(--accent-red)' },
+                { label: 'R', val: wallet.rp, bg: 'rgba(248, 183, 62, 0.2)', col: 'var(--accent-gold)' },
+                { label: 'K', val: wallet.kc, bg: 'rgba(0, 240, 255, 0.2)', col: 'var(--accent-cyan)' },
+              ].map((c) => (
+                <div key={c.label} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{
+                    width: '16px', height: '16px', borderRadius: '50%',
+                    backgroundColor: c.bg, color: c.col, fontSize: '9.5px', fontWeight: 800,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontFamily: 'var(--font-heading)'
+                  }}>{c.label}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', fontWeight: 600, color: '#fff' }}>
+                    {c.val.toLocaleString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </div>
       </div>
     </header>
   );
