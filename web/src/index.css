@@ -242,7 +242,8 @@ tbody tr:hover { background: var(--surface-2); }
     height: 100dvh;
   }
   .content-area {
-    padding: 14px 12px calc(72px + env(safe-area-inset-bottom, 0px)) 12px !important;
+    padding: 14px 12px calc(88px + env(safe-area-inset-bottom, 16px)) 12px !important;
+    scroll-padding-bottom: calc(88px + env(safe-area-inset-bottom, 16px)) !important;
   }
   .app-topbar {
     padding: 0 12px !important;
@@ -252,8 +253,8 @@ tbody tr:hover { background: var(--surface-2); }
     display: none !important;
   }
   .coach-screen {
-    height: calc(100vh - 120px) !important;
-    height: calc(100dvh - 120px) !important;
+    height: calc(100vh - 146px) !important;
+    height: calc(100dvh - 146px) !important;
   }
   .coach-message {
     max-width: 100% !important;
