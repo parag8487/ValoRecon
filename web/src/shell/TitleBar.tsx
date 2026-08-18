@@ -39,7 +39,41 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenDrawer }) => {
   const [live, setLive] = useState<LiveState>({ inGame: false, map: '', score: '' });
 
   const pollStatus = () => {
-    getRiotStatus().then(setRiotStatus).catch(() => setRiotStatus({ connected: false, gameRunning: false }));
+    try {
+      const savedSession = localStorage.getItem('valorecon_companion_session');
+      if (savedSession) {
+        const parsed = JSON.parse(savedSession);
+        if (parsed.pairingCode) {
+          setRiotStatus({
+            connected: true,
+            gameRunning: true,
+            gameName: parsed.gameName || `COMPANION`,
+            gameTag: parsed.pairingCode
+          });
+        }
+      }
+    } catch {
+      // ignore
+    }
+
+    getRiotStatus().then(setRiotStatus).catch(() => {
+      try {
+        const savedSession = localStorage.getItem('valorecon_companion_session');
+        if (savedSession) {
+          const parsed = JSON.parse(savedSession);
+          if (parsed.pairingCode) {
+            setRiotStatus({
+              connected: true,
+              gameRunning: true,
+              gameName: parsed.gameName || `COMPANION`,
+              gameTag: parsed.pairingCode
+            });
+            return;
+          }
+        }
+      } catch {}
+      setRiotStatus({ connected: false, gameRunning: false });
+    });
     getWallet().then(setWallet).catch(() => setWallet(null));
     getLiveMatch()
       .then((m) => setLive({ inGame: !!m.inGame, map: m.map || '', score: m.currentScore || '' }))
