@@ -119,6 +119,23 @@ export function createApp(customConfig?: Partial<AppConfig>) {
     }, 50);
   });
 
+  // System default browser opener
+  app.post('/api/open-browser', (req, res) => {
+    const url = req.body?.url;
+    if (!url || typeof url !== 'string' || (!url.startsWith('https://') && !url.startsWith('http://'))) {
+      return res.status(400).json({ error: 'Invalid URL' });
+    }
+    const { exec } = require('child_process');
+    if (process.platform === 'win32') {
+      exec(`start "" "${url.replace(/"/g, '')}"`);
+    } else if (process.platform === 'darwin') {
+      exec(`open "${url.replace(/"/g, '')}"`);
+    } else {
+      exec(`xdg-open "${url.replace(/"/g, '')}"`);
+    }
+    res.json({ ok: true, url });
+  });
+
   // Valorant API Proxies
   app.use('/api', valorantRouter);
 

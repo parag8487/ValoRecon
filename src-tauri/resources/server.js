@@ -79146,6 +79146,21 @@ function createApp(customConfig) {
       lifecycle.shutdown();
     }, 50);
   });
+  app.post("/api/open-browser", (req, res) => {
+    const url = req.body?.url;
+    if (!url || typeof url !== "string" || !url.startsWith("https://") && !url.startsWith("http://")) {
+      return res.status(400).json({ error: "Invalid URL" });
+    }
+    const { exec } = require("child_process");
+    if (process.platform === "win32") {
+      exec(`start "" "${url.replace(/"/g, "")}"`);
+    } else if (process.platform === "darwin") {
+      exec(`open "${url.replace(/"/g, "")}"`);
+    } else {
+      exec(`xdg-open "${url.replace(/"/g, "")}"`);
+    }
+    res.json({ ok: true, url });
+  });
   app.use("/api", valorant_default);
   app.use("/api", chat_default);
   app.use("/api", matchAnalysis_default);

@@ -210,6 +210,24 @@ export const CompanionScreen: React.FC = () => {
     }).catch(() => {});
   };
 
+  const openInSystemBrowser = async () => {
+    try {
+      // Send request to local sidecar backend to invoke OS ShellExecute and launch default browser
+      const res = await fetch('http://127.0.0.1:8799/api/open-browser', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: pairingUrl })
+      }).catch(() => null);
+
+      if (res && res.ok) {
+        return;
+      }
+    } catch {}
+
+    // Fallback if running directly in a standard browser tab
+    window.open(pairingUrl, '_blank');
+  };
+
   return (
     <div className="animate-fade-in" style={{ maxWidth: '1100px', margin: '0 auto', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* Header Banner */}
@@ -326,7 +344,7 @@ export const CompanionScreen: React.FC = () => {
                 {/* Open Web Companion in Browser Button (Desktop / Laptop only) */}
                 {!isMobile && (
                   <button
-                    onClick={() => window.open(pairingUrl, '_blank')}
+                    onClick={openInSystemBrowser}
                     className="tactical-btn-secondary"
                     style={{
                       width: '100%',
