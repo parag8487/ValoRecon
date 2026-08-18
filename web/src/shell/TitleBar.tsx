@@ -39,41 +39,47 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenDrawer }) => {
   const [live, setLive] = useState<LiveState>({ inGame: false, map: '', score: '' });
 
   const pollStatus = () => {
-    try {
-      const savedSession = localStorage.getItem('valorecon_companion_session');
-      if (savedSession) {
-        const parsed = JSON.parse(savedSession);
-        if (parsed.pairingCode) {
-          setRiotStatus({
-            connected: true,
-            gameRunning: true,
-            gameName: parsed.gameName || `COMPANION`,
-            gameTag: parsed.pairingCode
-          });
+    getRiotStatus()
+      .then((status) => {
+        if (status.connected) {
+          setRiotStatus(status);
+        } else {
+          try {
+            const savedSession = localStorage.getItem('valorecon_companion_session');
+            if (savedSession) {
+              const parsed = JSON.parse(savedSession);
+              if (parsed.connected && parsed.gameName) {
+                setRiotStatus({
+                  connected: true,
+                  gameRunning: true,
+                  gameName: parsed.gameName,
+                  gameTag: parsed.gameTag || 'help'
+                });
+                return;
+              }
+            }
+          } catch {}
+          setRiotStatus({ connected: false, gameRunning: false });
         }
-      }
-    } catch {
-      // ignore
-    }
-
-    getRiotStatus().then(setRiotStatus).catch(() => {
-      try {
-        const savedSession = localStorage.getItem('valorecon_companion_session');
-        if (savedSession) {
-          const parsed = JSON.parse(savedSession);
-          if (parsed.pairingCode) {
-            setRiotStatus({
-              connected: true,
-              gameRunning: true,
-              gameName: parsed.gameName || `COMPANION`,
-              gameTag: parsed.pairingCode
-            });
-            return;
+      })
+      .catch(() => {
+        try {
+          const savedSession = localStorage.getItem('valorecon_companion_session');
+          if (savedSession) {
+            const parsed = JSON.parse(savedSession);
+            if (parsed.connected && parsed.gameName) {
+              setRiotStatus({
+                connected: true,
+                gameRunning: true,
+                gameName: parsed.gameName,
+                gameTag: parsed.gameTag || 'help'
+              });
+              return;
+            }
           }
-        }
-      } catch {}
-      setRiotStatus({ connected: false, gameRunning: false });
-    });
+        } catch {}
+        setRiotStatus({ connected: false, gameRunning: false });
+      });
     getWallet().then(setWallet).catch(() => setWallet(null));
     getLiveMatch()
       .then((m) => setLive({ inGame: !!m.inGame, map: m.map || '', score: m.currentScore || '' }))
