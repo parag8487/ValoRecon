@@ -15,7 +15,8 @@ import {
   ChevronRight,
   User,
   MapPin,
-  Activity
+  Activity,
+  Smartphone
 } from 'lucide-react';
 import { ValoReconWordmark } from '../components/ValoReconLogo';
 import { getCareer, getRiotStatus, CareerData } from '../api/client';
@@ -37,12 +38,14 @@ const NAV_ITEMS: NavItem[] = [
   { path: '/agent-select', label: 'Agent Advisor', icon: UserCheck },
   { path: '/lineups', label: 'Lineups', icon: MapPin },
   { path: '/trends', label: 'Trends & Plan', icon: Activity, badge: 'NEW' },
+  { path: '/companion', label: 'Companion', icon: Smartphone, badge: 'SYNC' },
   { path: '/statistics', label: 'Statistics', icon: TrendingUp },
   { path: '/store', label: 'Store', icon: ShoppingBag },
   { path: '/loadout', label: 'Loadout', icon: Shield },
   { path: '/battlepass', label: 'Battlepass', icon: Award },
   { path: '/settings', label: 'Settings', icon: Settings },
 ];
+
 
 export const NavRail: React.FC = () => {
   const [career, setCareer] = useState<CareerData | null>(null);

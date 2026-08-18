@@ -16,6 +16,7 @@ import { StoreScreen } from './screens/StoreScreen';
 import { LoadoutScreen } from './screens/LoadoutScreen';
 import { BattlepassScreen } from './screens/BattlepassScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
+import { CompanionScreen } from './screens/CompanionScreen';
 
 export const App: React.FC = () => {
   return (
@@ -41,6 +42,7 @@ export const App: React.FC = () => {
               <Route path="/store" element={<StoreScreen />} />
               <Route path="/loadout" element={<LoadoutScreen />} />
               <Route path="/battlepass" element={<BattlepassScreen />} />
+              <Route path="/companion" element={<CompanionScreen />} />
               <Route path="/settings" element={<SettingsScreen />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
@@ -50,5 +52,6 @@ export const App: React.FC = () => {
     </BrowserRouter>
   );
 };
+
 
 export default App;
