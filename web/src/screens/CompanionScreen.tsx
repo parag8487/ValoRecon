@@ -141,9 +141,24 @@ export const CompanionScreen: React.FC = () => {
     generateCode();
   };
 
-  // Build the direct pairing URL for Google Lens & QR Code
-  const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  const pairingUrl = `${origin}/#/companion?code=${pairingCode || 'VALO99'}`;
+  // Build the direct public pairing URL for Google Lens & QR Code
+  const getPublicBaseUrl = () => {
+    if (typeof window === 'undefined') return 'https://valorecon.pages.dev';
+    const origin = window.location.origin;
+    // If running inside desktop app or local dev, use live Cloudflare Pages URL so mobile cameras can open it
+    if (
+      !origin ||
+      origin.includes('localhost') ||
+      origin.includes('127.0.0.1') ||
+      origin.startsWith('tauri://') ||
+      origin.includes('tauri.localhost')
+    ) {
+      return 'https://valorecon.pages.dev';
+    }
+    return origin;
+  };
+
+  const pairingUrl = `${getPublicBaseUrl()}/#/companion?code=${pairingCode || 'VALO99'}`;
 
   const copyPairingUrl = () => {
     navigator.clipboard.writeText(pairingUrl).then(() => {
