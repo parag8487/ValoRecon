@@ -17,11 +17,13 @@
     "build": "npm run build:server && npm run build:web",
     "build:desktop": "cargo build --manifest-path src-tauri/Cargo.toml",
     "build:desktop:release": "cargo build --release --manifest-path src-tauri/Cargo.toml",
+    "build:installer": "npx @tauri-apps/cli build --bundles nsis",
     "release:sign": "node scripts/generate-update-manifest.js",
     "release:security-test": "node scripts/test-update-security.js",
     "release:clean-test": "node scripts/validate-release-install.js",
     "release:sbom": "node scripts/generate-sbom.js",
     "release:checksums": "node scripts/generate-checksums.js",
+    "release:bundle": "npm run build:all && npm run build:installer && npm run release:sbom && npm run release:checksums && npm run release:sign",
     "release:verify": "npm run test:all && npm run release:security-test && npm run release:clean-test",
     "start": "concurrently -n \"SERVER,WEB\" -c \"red,cyan\" \"npm run start --prefix server\" \"npm run preview --prefix web\""
   },

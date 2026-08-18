@@ -12,7 +12,14 @@ function generateChecksums() {
   const distDir = path.join(rootDir, 'dist');
   if (!fs.existsSync(distDir)) fs.mkdirSync(distDir, { recursive: true });
 
+  const nsisSource = path.join(rootDir, 'src-tauri', 'target', 'release', 'bundle', 'nsis', 'ValoRecon_1.0.0_x64-setup.exe');
+  const nsisDest = path.join(distDir, 'ValoRecon_1.0.0_x64-setup.exe');
+  if (fs.existsSync(nsisSource)) {
+    fs.copyFileSync(nsisSource, nsisDest);
+  }
+
   const candidatePaths = [
+    { name: 'ValoRecon_1.0.0_x64-setup.exe', path: nsisDest },
     { name: 'valorecon.exe', path: path.join(rootDir, 'src-tauri', 'target', 'release', 'valorecon.exe') },
     { name: 'update.json', path: path.join(distDir, 'update.json') },
     { name: 'sbom.json', path: path.join(distDir, 'sbom.json') },

@@ -1,0 +1,19 @@
+{
+  "name": "ValoRecon Tactical Companion",
+  "short_name": "ValoRecon",
+  "description": "Zero-latency real-time live match radar, economy advisor, and tactical lineup second screen for VALORANT.",
+  "start_url": "/#/companion",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0b0c0e",
+  "theme_color": "#ff4655",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
