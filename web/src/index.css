@@ -259,8 +259,22 @@ tbody tr:hover { background: var(--surface-2); }
     overflow: hidden !important;
   }
   .app-topbar {
-    padding: 0 12px !important;
-    min-height: 50px !important;
+    padding: 0 10px !important;
+    min-height: 48px !important;
+    height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+  }
+  .topbar-left-section {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+    overflow: hidden !important;
   }
   .topbar-subtitle-text {
     display: none !important;
@@ -268,20 +282,28 @@ tbody tr:hover { background: var(--surface-2); }
   .topbar-wallet-section {
     display: none !important;
   }
+  .topbar-live-pill {
+    display: none !important;
+  }
   .topbar-title-heading {
     font-size: 13px !important;
-    max-width: 120px !important;
+    max-width: 110px !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
   }
+  .topbar-right-section {
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+  }
   .topbar-riot-pill {
-    max-width: 180px !important;
-    padding: 3px 8px !important;
-    font-size: 10.5px !important;
+    max-width: 140px !important;
+    padding: 2px 7px !important;
+    font-size: 10px !important;
   }
   .riot-status-text {
-    max-width: 130px !important;
+    max-width: 110px !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;

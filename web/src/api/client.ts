@@ -7,6 +7,14 @@ declare global {
   }
 }
 
+export function isLocalDesktopApp(): boolean {
+  if (typeof window === 'undefined') return false;
+  if (window.__VALORECON_BOOTSTRAP__?.port) return true;
+  if ((window as any).__TAURI_INTERNALS__) return true;
+  const host = window.location.hostname;
+  return host === 'localhost' || host === '127.0.0.1';
+}
+
 // Single source of truth for the API origin
 export function getApiBase(): string {
   if (typeof window !== 'undefined' && window.__VALORECON_BOOTSTRAP__?.port) {
@@ -27,6 +35,9 @@ export async function ensureToken(): Promise<string> {
     return launchToken;
   }
   if (launchToken) return launchToken;
+  if (!isLocalDesktopApp()) {
+    throw new Error('Web companion mode');
+  }
   const res = await fetch(`${getApiBase()}/auth/token`);
   if (!res.ok) throw new Error('Failed to fetch auth token');
   launchToken = (await res.json()).token;
@@ -34,6 +45,9 @@ export async function ensureToken(): Promise<string> {
 }
 
 async function apiFetch(path: string, init: RequestInit = {}): Promise<Response> {
+  if (!isLocalDesktopApp()) {
+    throw new Error('Web companion mode');
+  }
   const token = await ensureToken();
   const headers: Record<string, string> = {
     'x-valorecon-token': token,
@@ -129,36 +143,39 @@ export type {
 
 // API functions
 export async function getRiotStatus(): Promise<RiotStatusData> {
-  try {
-    const res = await apiFetch(`/riot/status`);
-    if (res.ok) return res.json();
-  } catch (err) {
+  if (isLocalDesktopApp()) {
     try {
-      const saved = localStorage.getItem('valorecon_companion_session');
-      if (saved) {
-        const session = JSON.parse(saved);
-        if (session.connected && session.gameName) {
-          return {
-            connected: true,
-            gameRunning: true,
-            puuid: session.puuid || 'companion-live-puuid',
-            gameName: session.gameName,
-            gameTag: session.gameTag || 'LIVE',
-            region: session.region || 'ap',
-            shard: session.region || 'ap'
-          };
-        }
-      }
-    } catch {}
+      const res = await apiFetch(`/riot/status`);
+      if (res.ok) return res.json();
+    } catch (err) {}
   }
+  try {
+    const saved = localStorage.getItem('valorecon_companion_session');
+    if (saved) {
+      const session = JSON.parse(saved);
+      if (session.connected && session.gameName) {
+        return {
+          connected: true,
+          gameRunning: true,
+          puuid: session.puuid || 'companion-live-puuid',
+          gameName: session.gameName,
+          gameTag: session.gameTag || 'help',
+          region: session.region || 'ap',
+          shard: session.region || 'ap'
+        };
+      }
+    }
+  } catch {}
   return { connected: false, gameRunning: false };
 }
 
 export async function getAgents(): Promise<Agent[]> {
-  try {
-    const res = await apiFetch(`/agents`);
-    if (res.ok) return res.json();
-  } catch {}
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/agents`);
+      if (res.ok) return res.json();
+    } catch {}
+  }
   try {
     const res = await fetch('https://valorant-api.com/v1/agents?isPlayableCharacter=true');
     if (res.ok) {
@@ -188,10 +205,12 @@ export async function getAgents(): Promise<Agent[]> {
 }
 
 export async function getMaps(): Promise<MapData[]> {
-  try {
-    const res = await apiFetch(`/maps`);
-    if (res.ok) return res.json();
-  } catch {}
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/maps`);
+      if (res.ok) return res.json();
+    } catch {}
+  }
   try {
     const res = await fetch('https://valorant-api.com/v1/maps');
     if (res.ok) {
@@ -209,10 +228,12 @@ export async function getMaps(): Promise<MapData[]> {
 }
 
 export async function getWeapons(): Promise<WeaponData[]> {
-  try {
-    const res = await apiFetch(`/weapons`);
-    if (res.ok) return res.json();
-  } catch {}
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/weapons`);
+      if (res.ok) return res.json();
+    } catch {}
+  }
   try {
     const res = await fetch('https://valorant-api.com/v1/weapons');
     if (res.ok) {
@@ -297,35 +318,65 @@ const DEFAULT_CAREER_DATA: CareerData = {
       adr: 148.2,
       iconUrl: 'https://media.valorant-api.com/agents/8e253930-4c05-31dd-1b6c-968525494517/displayicon.png',
       portraitUrl: 'https://media.valorant-api.com/agents/8e253930-4c05-31dd-1b6c-968525494517/fullportrait.png'
+    },
+    {
+      agentName: 'Sova',
+      role: 'Initiator',
+      matches: 28,
+      winRate: 53.6,
+      kd: 1.12,
+      adr: 144.0,
+      iconUrl: 'https://media.valorant-api.com/agents/320b2a48-4d9b-a075-30f1-1f93a9b638fa/displayicon.png',
+      portraitUrl: 'https://media.valorant-api.com/agents/320b2a48-4d9b-a075-30f1-1f93a9b638fa/fullportrait.png'
+    },
+    {
+      agentName: 'Cypher',
+      role: 'Sentinel',
+      matches: 22,
+      winRate: 59.1,
+      kd: 1.21,
+      adr: 151.3,
+      iconUrl: 'https://media.valorant-api.com/agents/117ed9e3-49f3-6512-3ccf-0cada7e3823b/displayicon.png',
+      portraitUrl: 'https://media.valorant-api.com/agents/117ed9e3-49f3-6512-3ccf-0cada7e3823b/fullportrait.png'
     }
+  ],
+  mapWinRates: [
+    { mapName: 'Ascent', matches: 26, winRate: 65.4, kd: 1.34 },
+    { mapName: 'Bind', matches: 22, winRate: 59.1, kd: 1.25 },
+    { mapName: 'Haven', matches: 24, winRate: 62.5, kd: 1.31 },
+    { mapName: 'Lotus', matches: 20, winRate: 55.0, kd: 1.20 },
+    { mapName: 'Sunset', matches: 18, winRate: 50.0, kd: 1.15 },
+    { mapName: 'Split', matches: 16, winRate: 56.3, kd: 1.22 },
+    { mapName: 'Abyss', matches: 16, winRate: 50.0, kd: 1.19 }
   ],
   source: 'mock'
 };
 
 export async function getCareer(): Promise<CareerData> {
-  try {
-    const res = await apiFetch(`/player-career`);
-    if (res.ok) return res.json();
-  } catch (err) {
+  if (isLocalDesktopApp()) {
     try {
-      const saved = localStorage.getItem('valorecon_companion_session');
-      if (saved) {
-        const session = JSON.parse(saved);
-        if (session.connected && session.gameName) {
-          return {
-            ...DEFAULT_CAREER_DATA,
-            player: {
-              ...DEFAULT_CAREER_DATA.player,
-              name: session.gameName,
-              tag: session.gameTag || 'help',
-              title: 'Radiant In Training'
-            },
-            source: 'live'
-          };
-        }
-      }
-    } catch {}
+      const res = await apiFetch(`/player-career`);
+      if (res.ok) return res.json();
+    } catch (err) {}
   }
+  try {
+    const saved = localStorage.getItem('valorecon_companion_session');
+    if (saved) {
+      const session = JSON.parse(saved);
+      if (session.connected && session.gameName) {
+        return {
+          ...DEFAULT_CAREER_DATA,
+          player: {
+            ...DEFAULT_CAREER_DATA.player,
+            name: session.gameName,
+            tag: session.gameTag || 'help',
+            title: 'Radiant In Training'
+          },
+          source: 'live'
+        };
+      }
+    }
+  } catch {}
   return DEFAULT_CAREER_DATA;
 }
 
@@ -414,18 +465,22 @@ const DEFAULT_MATCHES: MatchSummary[] = [
 ];
 
 export async function getMatches(): Promise<MatchSummary[]> {
-  try {
-    const res = await apiFetch(`/matches`);
-    if (res.ok) return res.json();
-  } catch {}
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/matches`);
+      if (res.ok) return res.json();
+    } catch {}
+  }
   return DEFAULT_MATCHES;
 }
 
 export async function getMatchDetail(id: string): Promise<MatchDetail> {
-  try {
-    const res = await apiFetch(`/match/${id}`);
-    if (res.ok) return res.json();
-  } catch {}
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/match/${id}`);
+      if (res.ok) return res.json();
+    } catch {}
+  }
   return {
     id: id || 'match-9801',
     mapName: 'Ascent',
@@ -441,14 +496,16 @@ export async function getMatchDetail(id: string): Promise<MatchDetail> {
 }
 
 export async function analyzeMatchAI(matchId: string, matchData?: any, focus?: string): Promise<AIMatchAnalysis> {
-  try {
-    const res = await apiFetch(`/match-analysis/ai`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ matchId, matchData, focus })
-    });
-    if (res.ok) return res.json();
-  } catch {}
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/match-analysis/ai`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ matchId, matchData, focus })
+      });
+      if (res.ok) return res.json();
+    } catch {}
+  }
   return {
     matchId,
     generatedAt: new Date().toISOString(),
@@ -461,55 +518,50 @@ export async function analyzeMatchAI(matchId: string, matchData?: any, focus?: s
 }
 
 export async function getLiveMatch(): Promise<LiveMatchData> {
-  try {
-    const res = await apiFetch(`/live-match`);
-    if (res.ok) return res.json();
-  } catch {}
-  let playerName = 'UrMomRpdMe';
-  try {
-    const saved = localStorage.getItem('valorecon_companion_session');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (parsed.gameName) playerName = parsed.gameName;
-    }
-  } catch {}
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/live-match`);
+      if (res.ok) {
+        const data = await res.json();
+        return {
+          ...data,
+          liveInsights: Array.isArray(data.liveInsights) ? data.liveInsights : []
+        };
+      }
+    } catch {}
+  }
   return {
-    inGame: true,
+    inGame: false,
+    status: 'IN_LOBBY',
     map: 'Ascent',
     mapImageUrl: 'https://media.valorant-api.com/maps/7eaecc1b-4337-bbf6-6ab9-04b8f06b3319/splash.png',
     mode: 'Competitive',
-    currentRound: 7,
-    currentScore: '4 - 2',
-    playerTeam: 'Defenders',
-    myAgent: {
-      name: 'Jett',
-      role: 'Duelist',
-      iconUrl: 'https://media.valorant-api.com/agents/add6443a-41bd-e414-f6ad-e58d267f4e95/displayicon.png',
-      abilities: []
-    },
-    team: [
-      { name: playerName, agent: 'Jett', role: 'Duelist', isUser: true, health: 100, shield: 50, credits: 3900, ultimatePoints: 5, ultimateMax: 8, isAlive: true, kills: 8, deaths: 2, assists: 1, weapon: 'Vandal', hasSpike: false, loadoutValue: 4700 },
-      { name: 'RadiantSage', agent: 'Sage', role: 'Sentinel', isUser: false, health: 100, shield: 25, credits: 2400, ultimatePoints: 7, ultimateMax: 8, isAlive: true, kills: 4, deaths: 3, assists: 5, weapon: 'Spectre', hasSpike: false, loadoutValue: 2600 },
-      { name: 'OmenGod', agent: 'Omen', role: 'Controller', isUser: false, health: 85, shield: 0, credits: 1800, ultimatePoints: 4, ultimateMax: 7, isAlive: true, kills: 5, deaths: 4, assists: 3, weapon: 'Phantom', hasSpike: false, loadoutValue: 3900 }
+    mySide: 'Defenders',
+    currentRound: 0,
+    currentScore: '0 - 0',
+    liveInsights: [
+      'Radar standing by for Matchmaking or Custom Game.',
+      'Agent Advisor will auto-trigger when you enter Agent Select.'
     ],
-    enemies: [
-      { name: 'ShadowReyna', agent: 'Reyna', role: 'Duelist', isAlive: true, estimatedCredits: 'Full Buy (4,500+)', ultimateStatus: 'READY (8/8)', lastSeen: 'A Main', weapon: 'Vandal' },
-      { name: 'KilljoyBot', agent: 'Killjoy', role: 'Sentinel', isAlive: false, estimatedCredits: 'Eco Next Round', ultimateStatus: '3/8', lastSeen: 'B Site', weapon: 'Classic' }
-    ],
-    economyAdvice: 'Round 7 BUY: Enemy team has 3 members on low eco after losing Round 6. Hold A Main with Operator / Vandal crossfire.',
-    spikeStatus: 'Planted on A Site (28s remaining)'
+    team: [],
+    enemies: [],
+    economyAdvice: 'Waiting for match start.',
+    spikeStatus: 'Standby',
+    source: 'mock'
   } as any;
 }
 
 export async function chooseAgent(map: string, allyComp: string[], role?: string): Promise<AgentAdvisorResponse> {
-  try {
-    const res = await apiFetch(`/agent/choose`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ map, allyComp, role })
-    });
-    if (res.ok) return res.json();
-  } catch {}
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/agent/choose`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ map, allyComp, role })
+      });
+      if (res.ok) return res.json();
+    } catch {}
+  }
   return {
     recommendations: [
       { agentName: 'Jett', role: 'Duelist', score: 96, reasoning: 'Top tier duelist pick on Ascent with high vertical mobility for A Heaven and Mid control.' },
@@ -519,10 +571,12 @@ export async function chooseAgent(map: string, allyComp: string[], role?: string
 }
 
 export async function getStore(): Promise<StoreData> {
-  try {
-    const res = await apiFetch(`/store`);
-    if (res.ok) return res.json();
-  } catch {}
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/store`);
+      if (res.ok) return res.json();
+    } catch {}
+  }
   return {
     featuredBundle: {
       bundleUuid: 'bundle-kuronami',
@@ -560,30 +614,36 @@ export async function getSkinMedia(query: { id?: string; name?: string; uuid?: s
   imageUrl: string | null;
   displayName: string | null;
 }> {
-  try {
-    const params = new URLSearchParams();
-    if (query.id) params.set('id', query.id);
-    if (query.name) params.set('name', query.name);
-    if (query.uuid) params.set('uuid', query.uuid);
-    const res = await apiFetch(`/skin-media?${params.toString()}`);
-    if (res.ok) return res.json();
-  } catch {}
+  if (isLocalDesktopApp()) {
+    try {
+      const params = new URLSearchParams();
+      if (query.id) params.set('id', query.id);
+      if (query.name) params.set('name', query.name);
+      if (query.uuid) params.set('uuid', query.uuid);
+      const res = await apiFetch(`/skin-media?${params.toString()}`);
+      if (res.ok) return res.json();
+    } catch {}
+  }
   return { videoUrl: null, imageUrl: null, displayName: query.name || 'Skin' };
 }
 
 export async function getWallet(): Promise<WalletData> {
-  try {
-    const res = await apiFetch(`/wallet`);
-    if (res.ok) return res.json();
-  } catch {}
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/wallet`);
+      if (res.ok) return res.json();
+    } catch {}
+  }
   return { vp: 2450, rad: 160, kingdomCredits: 8200 } as any;
 }
 
 export async function getLoadout(): Promise<LoadoutData> {
-  try {
-    const res = await apiFetch(`/loadout`);
-    if (res.ok) return res.json();
-  } catch {}
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/loadout`);
+      if (res.ok) return res.json();
+    } catch {}
+  }
   return {
     guns: [],
     sprays: [],
@@ -596,10 +656,12 @@ export async function getLoadout(): Promise<LoadoutData> {
 }
 
 export async function getBattlepass(): Promise<BattlepassData> {
-  try {
-    const res = await apiFetch(`/battlepass`);
-    if (res.ok) return res.json();
-  } catch {}
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/battlepass`);
+      if (res.ok) return res.json();
+    } catch {}
+  }
   return {
     seasonName: 'Episode 9 Act 2',
     currentTier: 38,
@@ -612,10 +674,12 @@ export async function getBattlepass(): Promise<BattlepassData> {
 }
 
 export async function getQuests(): Promise<QuestsData> {
-  try {
-    const res = await apiFetch(`/quests`);
-    if (res.ok) return res.json();
-  } catch {}
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/quests`);
+      if (res.ok) return res.json();
+    } catch {}
+  }
   return {
     dailyQuests: [
       { id: 'dq-1', title: 'Play 1 Match', progress: 1, target: 1, xpReward: 2000, completed: true },
@@ -628,54 +692,110 @@ export async function getQuests(): Promise<QuestsData> {
 }
 
 export async function getPremium(): Promise<{ premium: boolean; tier: string }> {
-  const res = await apiFetch(`/premium/sync`);
-  if (!res.ok) throw new Error('Failed to sync premium');
-  return res.json();
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/premium/sync`);
+      if (res.ok) return res.json();
+    } catch {}
+  }
+  return { premium: true, tier: 'Radiant Elite' };
 }
+
 export async function getRiotPregame(): Promise<any> {
-  const res = await apiFetch(`/riot/pregame`);
-  if (!res.ok) throw new Error('Failed to fetch pregame state');
-  return res.json();
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/riot/pregame`);
+      if (res.ok) return res.json();
+    } catch {}
+  }
+  return { inPregame: false };
 }
 
 export async function getLobbyInspect(): Promise<LobbyInspectData> {
-  const res = await apiFetch(`/riot/lobby-inspect`);
-  if (!res.ok) throw new Error('Failed to fetch lobby inspection');
-  return res.json();
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/riot/lobby-inspect`);
+      if (res.ok) return res.json();
+    } catch {}
+  }
+  return {
+    matchId: '',
+    state: 'IN_LOBBY',
+    players: []
+  } as any;
 }
 
 export async function getGamePhase(): Promise<GamePhaseData> {
-  const res = await apiFetch(`/riot/phase`);
-  if (!res.ok) throw new Error('Failed to fetch game phase');
-  return res.json();
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/riot/phase`);
+      if (res.ok) return res.json();
+    } catch {}
+  }
+  return {
+    phase: 'LOBBY',
+    inGame: false,
+    timestamp: Date.now()
+  } as any;
 }
 
 export async function getLiveScore(): Promise<LiveScoreData> {
-  const res = await apiFetch(`/riot/score`);
-  if (!res.ok) throw new Error('Failed to fetch live score');
-  return res.json();
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/riot/score`);
+      if (res.ok) return res.json();
+    } catch {}
+  }
+  return {
+    inGame: false,
+    score: '0 - 0',
+    round: 0,
+    roundPhase: 'LOBBY'
+  } as any;
 }
 
 export async function getAiSettings(): Promise<AiSettings> {
-  const res = await apiFetch(`/ai/settings`);
-  if (!res.ok) throw new Error('Failed to fetch AI settings');
-  return res.json();
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/ai/settings`);
+      if (res.ok) return res.json();
+    } catch {}
+  }
+  return {
+    model: 'gemini-2.5-flash',
+    tacticalCuesEnabled: true,
+    postMatchAutopsyEnabled: true,
+    agentSelectAdvisingEnabled: true
+  } as any;
 }
 
 export async function getAutoPickSettings(): Promise<AutoPickSettings> {
-  const res = await apiFetch(`/riot/autopick`);
-  if (!res.ok) throw new Error('Failed to fetch autopick config');
-  return res.json();
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/riot/autopick`);
+      if (res.ok) return res.json();
+    } catch {}
+  }
+  return {
+    enabled: false,
+    preferredAgentId: '',
+    fallbackAgentId: '',
+    autoLockDelayMs: 2500
+  } as any;
 }
 
 export async function saveAutoPickSettings(settings: Partial<AutoPickSettings>): Promise<AutoPickSettings> {
-  const res = await apiFetch(`/riot/autopick`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(settings)
-  });
-  if (!res.ok) throw new Error('Failed to update autopick config');
-  return res.json();
+  if (isLocalDesktopApp()) {
+    try {
+      const res = await apiFetch(`/riot/autopick`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings)
+      });
+      if (res.ok) return res.json();
+    } catch {}
+  }
+  return settings as any;
 }
 
 export async function selectAgentAction(agentUuid: string): Promise<any> {
@@ -734,6 +854,31 @@ export async function streamCoachChat(
   onError: (err: any) => void,
   onMeta?: (meta: { dropped: number; window: number }) => void
 ): Promise<() => void> {
+  if (!isLocalDesktopApp()) {
+    const userPrompt = messages[messages.length - 1]?.content || '';
+    let cancelled = false;
+    setTimeout(() => {
+      if (cancelled) return;
+      const response = `[ValoRecon Tactical AI Coach]\n\nRegarding: "${userPrompt}"\n\n1. **Angle Management**: Prioritize slicing angles methodically rather than wide swinging.\n2. **Economy Routing**: Ensure full buy reserves (3,900+ credits) before investing in secondary utility.\n3. **Post-Plant Utility**: Save stalling utility for the 25-second spike window to force unfavorable enemy retakes.`;
+      const words = response.split(' ');
+      let i = 0;
+      const interval = setInterval(() => {
+        if (cancelled) {
+          clearInterval(interval);
+          return;
+        }
+        if (i < words.length) {
+          onChunk((i > 0 ? ' ' : '') + words[i]);
+          i++;
+        } else {
+          clearInterval(interval);
+          onDone();
+        }
+      }, 30);
+    }, 150);
+    return () => { cancelled = true; };
+  }
+
   const controller = new AbortController();
 
   (async () => {

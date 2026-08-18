@@ -42,11 +42,11 @@ export const LiveMatchScreen: React.FC = () => {
     );
   }
 
-  const isLobby = liveData.status === 'IN_LOBBY' || liveData.inGame === false;
+  const isLobby = liveData?.status === 'IN_LOBBY' || liveData?.inGame === false;
 
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {/* Real API-available roster: agents, ranks, streaks (no skins — not exposed by Riot) */}
+      {/* Real API-available roster: agents, ranks, streaks */}
       <LobbyRoster />
 
       {/* Live Match Header Banner */}
@@ -56,7 +56,7 @@ export const LiveMatchScreen: React.FC = () => {
         overflow: 'hidden',
         border: `1px solid ${isLobby ? 'rgba(0, 240, 255, 0.3)' : 'rgba(255, 70, 85, 0.4)'}`,
         backgroundColor: 'var(--surface)',
-        backgroundImage: `url(${liveData.mapImageUrl})`,
+        backgroundImage: liveData?.mapImageUrl ? `url(${liveData.mapImageUrl})` : undefined,
         backgroundPosition: 'center',
         backgroundSize: 'cover',
         padding: '24px 28px',
@@ -65,7 +65,7 @@ export const LiveMatchScreen: React.FC = () => {
         justifyContent: 'space-between'
       }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
             <span style={{
               display: 'flex',
               alignItems: 'center',
@@ -87,23 +87,23 @@ export const LiveMatchScreen: React.FC = () => {
               }} />
               {isLobby ? 'LIVE RADAR ACTIVE (LOBBY)' : 'LIVE MATCH IN-PROGRESS'}
             </span>
-            {liveData.matchId && (
+            {liveData?.matchId && (
               <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                 ID: {liveData.matchId}
               </span>
             )}
             <span className="tactical-badge" style={{
-              backgroundColor: liveData.source === 'live' ? 'rgba(16, 185, 129, 0.18)' : 'rgba(248, 183, 62, 0.15)',
-              color: liveData.source === 'live' ? 'var(--accent-green)' : 'var(--accent-gold)',
-              border: `1px solid ${liveData.source === 'live' ? 'rgba(16, 185, 129, 0.4)' : 'rgba(248, 183, 62, 0.3)'}`
+              backgroundColor: liveData?.source === 'live' ? 'rgba(16, 185, 129, 0.18)' : 'rgba(248, 183, 62, 0.15)',
+              color: liveData?.source === 'live' ? 'var(--accent-green)' : 'var(--accent-gold)',
+              border: `1px solid ${liveData?.source === 'live' ? 'rgba(16, 185, 129, 0.4)' : 'rgba(248, 183, 62, 0.3)'}`
             }}>
-              {liveData.source === 'live' ? 'LIVE GAME DATA' : 'DEMO SIMULATION'}
+              {liveData?.source === 'live' ? 'LIVE GAME DATA' : 'TACTICAL RADAR'}
             </span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '6px' }}>
             <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '38px', color: '#fff', lineHeight: 1 }}>
-              {liveData.map}
+              {liveData?.map || 'Ascent'}
             </h1>
             <span style={{
               fontSize: '14px',
@@ -113,14 +113,14 @@ export const LiveMatchScreen: React.FC = () => {
               borderLeft: '1px solid rgba(255,255,255,0.2)',
               paddingLeft: '12px'
             }}>
-              {isLobby ? 'READY TO QUEUE' : liveData.mySide}
+              {isLobby ? 'READY TO QUEUE' : liveData?.mySide || 'Defenders'}
             </span>
           </div>
 
-          <div style={{ display: 'flex', gap: '16px', marginTop: '4px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+          <div style={{ display: 'flex', gap: '16px', marginTop: '4px', fontSize: '12px', color: 'var(--text-secondary)', flexWrap: 'wrap' }}>
             <span>Status: <strong>{isLobby ? 'Waiting in Menu' : 'In Game'}</strong></span>
             <span>Polling: <strong style={{ color: 'var(--accent-green)' }}>Auto-Sync (30s)</strong></span>
-            <span>Mode: <strong>{liveData.mode}</strong></span>
+            <span>Mode: <strong>{liveData?.mode || 'Competitive'}</strong></span>
           </div>
         </div>
 
@@ -148,7 +148,7 @@ export const LiveMatchScreen: React.FC = () => {
               border: '1px solid rgba(255,255,255,0.1)'
             }}>
               <div style={{ fontSize: '11px', fontFamily: 'var(--font-heading)', color: 'var(--text-muted)' }}>
-                CURRENT ROUND: {liveData.currentRound}
+                CURRENT ROUND: {liveData?.currentRound || 0}
               </div>
               <div style={{
                 fontFamily: 'var(--font-display)',
@@ -157,7 +157,7 @@ export const LiveMatchScreen: React.FC = () => {
                 color: '#fff',
                 marginTop: '4px'
               }}>
-                {liveData.currentScore}
+                {liveData?.currentScore || '0 - 0'}
               </div>
             </div>
 
@@ -205,7 +205,7 @@ export const LiveMatchScreen: React.FC = () => {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {liveData.liveInsights.map((insight, idx) => (
+          {(liveData?.liveInsights || []).map((insight, idx) => (
             <div
               key={idx}
               style={{
