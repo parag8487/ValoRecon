@@ -743,7 +743,7 @@ export const CoachScreen: React.FC = () => {
       </div>
 
       {/* Suggestion Chips */}
-      <div style={{
+      <div className="touch-scroll" style={{
         display: 'flex',
         alignItems: 'center',
         gap: '8px',
@@ -788,7 +788,7 @@ export const CoachScreen: React.FC = () => {
         padding: '8px 12px',
         display: 'flex',
         alignItems: 'center',
-        gap: '10px',
+        gap: '8px',
         border: '1px solid rgba(255, 70, 85, 0.3)'
       }}>
         <input
@@ -814,16 +814,18 @@ export const CoachScreen: React.FC = () => {
             border: '1px solid rgba(255,255,255,0.1)',
             borderRadius: '4px',
             color: uploading ? 'var(--accent-cyan)' : 'var(--text-muted)',
-            padding: '7px 10px',
+            padding: '7px 8px',
             cursor: isStreaming || uploading ? 'not-allowed' : 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '6px',
-            fontSize: '12px'
+            gap: '4px',
+            fontSize: '11px',
+            flexShrink: 0
           }}
         >
-          <Paperclip size={14} /> {uploading ? 'ANALYZING...' : 'SCREENSHOT'}
+          <Paperclip size={14} /> <span className="hide-on-mobile-tiny">{uploading ? '...' : 'IMG'}</span>
         </button>
+
         <input
           type="text"
           value={input}

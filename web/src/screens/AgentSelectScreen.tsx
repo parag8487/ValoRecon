@@ -475,7 +475,7 @@ export const AgentSelectScreen: React.FC = () => {
 
       {/* Main Tab 1: AUTO-PICK & REAL-TIME LOCK */}
       {activeTab === 'autopick' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: '20px' }}>
+        <div className="analysis-split-grid" style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: '20px' }}>
           {/* Left Column: Configuration Card */}
           <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -791,7 +791,7 @@ export const AgentSelectScreen: React.FC = () => {
 
       {/* Main Tab 2: STRATEGIC AI ADVISOR */}
       {activeTab === 'advisor' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '360px 1fr', gap: '20px' }}>
+        <div className="analysis-split-grid" style={{ display: 'grid', gridTemplateColumns: '360px 1fr', gap: '20px' }}>
           {/* Left: Map & Comp Controls */}
           <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div>

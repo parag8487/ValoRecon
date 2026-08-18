@@ -71,7 +71,7 @@ export const LineupsScreen: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <div className="glass-panel" style={{ padding: '14px 20px', display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
+      <div className="glass-panel lineups-filters-grid" style={{ padding: '14px 20px', display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
         <select value={map} onChange={(e) => setMap(e.target.value)} style={selectStyle}>
           <option value="">All Maps</option>
           {(meta?.maps || []).map((m) => <option key={m} value={m}>{m}</option>)}

@@ -65,7 +65,7 @@ export const MatchAnalysisScreen: React.FC = () => {
   const currentAnalysis = selectedMatch ? analysisMap[selectedMatch.id] : null;
 
   return (
-    <div className="animate-fade-in" style={{
+    <div className="animate-fade-in analysis-split-grid" style={{
       display: 'grid',
       gridTemplateColumns: '360px 1fr',
       gap: '20px',

@@ -62,7 +62,7 @@ export const StatisticsScreen: React.FC = () => {
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Top Combat Metrics Banner */}
-      <div style={{
+      <div className="home-kpi-grid" style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(5, 1fr)',
         gap: '14px'
@@ -129,7 +129,7 @@ export const StatisticsScreen: React.FC = () => {
       </div>
 
       {/* Charts Row: Trend Line & Aim Distribution */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
+      <div className="stats-charts-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
         {/* Performance Trend Chart */}
         <div className="glass-panel" style={{ padding: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
@@ -213,7 +213,7 @@ export const StatisticsScreen: React.FC = () => {
       </div>
 
       {/* Two Columns: Map Win Rates & Agent Performance */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+      <div className="stats-charts-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
         {/* Map Performance Matrix */}
         <div className="glass-panel" style={{ padding: '20px' }}>
           <span style={{ fontFamily: 'var(--font-heading)', fontSize: '15px', fontWeight: 700, color: '#fff', letterSpacing: '0.04em' }}>

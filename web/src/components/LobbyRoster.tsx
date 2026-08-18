@@ -213,11 +213,12 @@ export const LobbyRoster: React.FC = () => {
         </div>
       </div>
 
-      {/* Two columns side by side */}
-      <div style={{ display: 'flex', gap: '16px', padding: '14px' }}>
+      {/* Team Columns (2 columns on desktop, stacked on mobile) */}
+      <div className="grid-2-mobile" style={{ display: 'grid', gridTemplateColumns: enemies.length > 0 ? '1fr 1fr' : '1fr', gap: '16px', padding: '14px' }}>
         <RosterColumn title="◆ YOUR TEAM" color="var(--accent-cyan, #00f0ff)" list={allies} />
         {enemies.length > 0 && <RosterColumn title="◆ ENEMY TEAM" color="var(--accent-red, #ff4655)" list={enemies} />}
       </div>
+
 
       <div style={{
         padding: '9px 16px', borderTop: '1px solid var(--border-color)',

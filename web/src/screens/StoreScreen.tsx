@@ -123,7 +123,7 @@ export const StoreScreen: React.FC = () => {
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* Featured Bundle Showcase */}
-      <div style={{
+      <div className="home-player-banner" style={{
         position: 'relative',
         borderRadius: '12px',
         overflow: 'hidden',
@@ -242,7 +242,7 @@ export const StoreScreen: React.FC = () => {
           </span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+        <div className="store-offers-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
           {store.dailyOffers.map((offer) => (
             <div
               key={offer.id}
@@ -338,7 +338,7 @@ export const StoreScreen: React.FC = () => {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '14px' }}>
+          <div className="store-night-market-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '14px' }}>
             {store.nightMarket.offers.map((nm) => {
               const isRevealed = nightMarketReveals[nm.id];
               return (

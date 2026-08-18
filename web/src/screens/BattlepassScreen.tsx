@@ -44,7 +44,7 @@ export const BattlepassScreen: React.FC = () => {
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Header Banner */}
-      <div className="glass-panel" style={{
+      <div className="glass-panel home-player-banner" style={{
         padding: '24px 28px',
         display: 'flex',
         alignItems: 'center',

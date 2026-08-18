@@ -64,7 +64,7 @@ export const LoadoutScreen: React.FC = () => {
         flexWrap: 'wrap',
         gap: '12px'
       }}>
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        <div className="touch-scroll" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
           {Object.keys(WEAPON_CATEGORIES).map((cat) => (
             <button
               key={cat}
@@ -77,6 +77,7 @@ export const LoadoutScreen: React.FC = () => {
                 fontWeight: 700,
                 letterSpacing: '0.04em',
                 cursor: 'pointer',
+                whiteSpace: 'nowrap',
                 backgroundColor: selectedCategory === cat ? 'var(--accent-red)' : 'rgba(0,0,0,0.3)',
                 color: selectedCategory === cat ? '#fff' : 'var(--text-secondary)',
                 border: `1px solid ${selectedCategory === cat ? 'var(--accent-red)' : 'rgba(255,255,255,0.06)'}`,
@@ -103,7 +104,7 @@ export const LoadoutScreen: React.FC = () => {
       </div>
 
       {/* Weapons in Selected Category Grid */}
-      <div style={{
+      <div className="loadout-weapons-grid" style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
         gap: '16px'

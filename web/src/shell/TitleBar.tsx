@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, Menu } from 'lucide-react';
 import { getWallet, getRiotStatus, getLiveMatch, WalletData, RiotStatusData } from '../api/client';
 import { ValoReconMonogram } from '../components/ValoReconLogo';
+
+interface TitleBarProps {
+  onOpenDrawer?: () => void;
+}
 
 const ROUTE_TITLES: Record<string, { title: string; subtitle: string }> = {
   '/': { title: 'COMMAND DASHBOARD', subtitle: 'TACTICAL OVERVIEW & PERFORMANCE' },
@@ -11,10 +15,13 @@ const ROUTE_TITLES: Record<string, { title: string; subtitle: string }> = {
   '/match-detail': { title: 'MATCH DETAIL & SCOREBOARD', subtitle: 'ROUNDS, ECONOMY & COMBAT METRICS' },
   '/live-match': { title: 'LIVE MATCH TRACKER', subtitle: 'REAL-TIME ULTIMATE & ECONOMY RADAR' },
   '/agent-select': { title: 'AGENT SELECT ADVISOR', subtitle: 'MAP META SYNERGY & INSTANT PICK AID' },
+  '/lineups': { title: 'LINEUPS & UTILITY', subtitle: 'SOVA, VIPER, BRIMSTONE & MORE' },
+  '/trends': { title: 'TRENDS & BENCHMARKS', subtitle: 'PERFORMANCE DELTAS & DRILLS' },
   '/statistics': { title: 'PERFORMANCE STATISTICS', subtitle: 'AGENT, MAP & COMBAT ANALYTICS' },
   '/store': { title: 'FEATURED STORE & NIGHT MARKET', subtitle: 'DAILY ROTATION & SPECIAL OFFERS' },
   '/loadout': { title: 'WEAPON ARSENAL & LOADOUT', subtitle: 'EQUIPPED SKINS, CHROMAS & BUDDIES' },
   '/battlepass': { title: 'BATTLEPASS PROGRESSION', subtitle: 'SEASON REWARDS & QUESTS' },
+  '/companion': { title: 'SECOND SCREEN COMPANION', subtitle: 'LIVE RADAR & RADIANITE SYNC' },
   '/settings': { title: 'SYSTEM SETTINGS', subtitle: 'APP CONFIGURATION & PREFERENCES' },
 };
 
@@ -24,7 +31,7 @@ interface LiveState {
   score: string;
 }
 
-export const TitleBar: React.FC = () => {
+export const TitleBar: React.FC<TitleBarProps> = ({ onOpenDrawer }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [wallet, setWallet] = useState<WalletData | null>(null);
@@ -65,7 +72,24 @@ export const TitleBar: React.FC = () => {
     }}>
       {/* Title & Subtitle with Monogram */}
       <div className="topbar-title" style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
+        {onOpenDrawer && (
+          <button
+            className="mobile-header-menu-btn"
+            onClick={onOpenDrawer}
+            style={{
+              display: 'none',
+              background: 'none',
+              border: 'none',
+              color: 'var(--text-primary)',
+              padding: '6px',
+              cursor: 'pointer'
+            }}
+          >
+            <Menu size={22} />
+          </button>
+        )}
         <ValoReconMonogram size={20} />
+
         <div style={{ display: 'flex', alignItems: 'baseline', minWidth: 0, gap: '8px', flexWrap: 'wrap' }}>
           <span style={{
             fontFamily: 'var(--font-heading)',

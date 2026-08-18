@@ -47,14 +47,14 @@ export const CompanionScreen: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ padding: '28px', maxWidth: '1000px', margin: '0 auto', color: 'var(--text-primary)' }}>
+    <div style={{ maxWidth: '1000px', margin: '0 auto', color: 'var(--text-primary)' }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+      <div className="home-player-banner" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', gap: '12px' }}>
         <div>
-          <h1 style={{ fontSize: '22px', fontWeight: 800, letterSpacing: '0.04em', margin: 0, color: '#ffffff' }}>
+          <h1 style={{ fontSize: '20px', fontWeight: 800, letterSpacing: '0.04em', margin: 0, color: '#ffffff' }}>
             MOBILE COMPANION & SECOND SCREEN
           </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '13px', margin: '4px 0 0 0' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '12px', margin: '4px 0 0 0' }}>
             Pair your phone or second monitor for zero-latency live match radar and AI coaching.
           </p>
         </div>
@@ -81,7 +81,7 @@ export const CompanionScreen: React.FC = () => {
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+      <div className="companion-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
         {/* Pairing Card */}
         <div style={{
           background: 'var(--bg-card)',

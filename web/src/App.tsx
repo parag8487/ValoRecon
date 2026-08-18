@@ -21,17 +21,23 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { ToastContainer } from './components/ToastContainer';
 import { DataProvenanceBanner } from './components/DataProvenanceBanner';
 
+import { useState } from 'react';
+import { MobileBottomNav } from './shell/MobileBottomNav';
+import { MobileDrawer } from './shell/MobileDrawer';
+
 export const App: React.FC = () => {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
   return (
     <BrowserRouter>
       <ErrorBoundary fallbackTitle="APPLICATION SHELL ERROR">
         <div className="app-container">
-          {/* Left NavRail */}
+          {/* Left NavRail (Desktop) */}
           <NavRail />
 
           {/* Main Application Area */}
           <div className="main-viewport">
-            <TitleBar />
+            <TitleBar onOpenDrawer={() => setDrawerOpen(true)} />
             <DataProvenanceBanner />
             <main className="content-area">
               <ErrorBoundary>
@@ -56,11 +62,23 @@ export const App: React.FC = () => {
             </main>
           </div>
         </div>
+
+        {/* Mobile Navigation Shell (Visible only on < 769px) */}
+        <MobileBottomNav
+          onOpenDrawer={() => setDrawerOpen(true)}
+          drawerOpen={drawerOpen}
+        />
+        <MobileDrawer
+          isOpen={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+        />
+
         <ToastContainer />
       </ErrorBoundary>
     </BrowserRouter>
   );
 };
+
 
 export default App;
 

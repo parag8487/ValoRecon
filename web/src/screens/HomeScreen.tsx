@@ -53,7 +53,7 @@ export const HomeScreen: React.FC = () => {
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* Hero Player Banner */}
-      <div style={{
+      <div className="home-player-banner" style={{
         position: 'relative',
         borderRadius: '12px',
         overflow: 'hidden',
@@ -202,7 +202,7 @@ export const HomeScreen: React.FC = () => {
       </div>
 
       {/* KPI Cards Grid */}
-      <div style={{
+      <div className="home-kpi-grid" style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(4, 1fr)',
         gap: '16px'
@@ -311,7 +311,7 @@ export const HomeScreen: React.FC = () => {
       </div>
 
       {/* Tactical Quick Links */}
-      <div style={{
+      <div className="home-quick-actions" style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(4, 1fr)',
         gap: '16px'
@@ -382,7 +382,8 @@ export const HomeScreen: React.FC = () => {
       </div>
 
       {/* Main Grid: Top Agents & Recent Matches */}
-      <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr', gap: '20px' }}>
+      <div className="home-content-split" style={{ display: 'grid', gridTemplateColumns: '340px 1fr', gap: '20px' }}>
+
         {/* Top Agents */}
         <div className="glass-panel" style={{ padding: '20px' }}>
           <div style={{

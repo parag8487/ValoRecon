@@ -49,7 +49,7 @@ export const MatchDetailScreen: React.FC = () => {
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Header Selector & Summary */}
-      <div className="glass-panel" style={{
+      <div className="glass-panel home-player-banner" style={{
         padding: '20px 24px',
         display: 'flex',
         alignItems: 'center',
@@ -158,7 +158,7 @@ export const MatchDetailScreen: React.FC = () => {
             </span>
           </div>
 
-          <div style={{ overflowX: 'auto' }}>
+          <div className="touch-scroll" style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
               <thead>
                 <tr style={{ backgroundColor: 'rgba(0,0,0,0.3)', color: 'var(--text-muted)', fontFamily: 'var(--font-heading)', fontSize: '11px', letterSpacing: '0.05em' }}>
@@ -232,7 +232,7 @@ export const MatchDetailScreen: React.FC = () => {
             </span>
           </div>
 
-          <div style={{ overflowX: 'auto' }}>
+          <div className="touch-scroll" style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
               <thead>
                 <tr style={{ backgroundColor: 'rgba(0,0,0,0.3)', color: 'var(--text-muted)', fontFamily: 'var(--font-heading)', fontSize: '11px', letterSpacing: '0.05em' }}>

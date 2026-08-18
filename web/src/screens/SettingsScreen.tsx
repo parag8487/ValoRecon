@@ -73,7 +73,7 @@ export const SettingsScreen: React.FC = () => {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+      <div className="settings-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
         {/* Left: AI & App Preferences */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {/* AI Coach Behavior */}

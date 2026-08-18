@@ -64,34 +64,36 @@ export const TrendsScreen: React.FC = () => {
             Not enough match data yet. Play more games to unlock trend analysis.
           </div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-            <thead>
-              <tr style={{ color: 'var(--text-muted)', textAlign: 'left' }}>
-                <th style={{ padding: '8px 10px', borderBottom: '1px solid var(--border-color)' }}>Window</th>
-                <th style={{ padding: '8px 10px', borderBottom: '1px solid var(--border-color)' }}>W/L</th>
-                <th style={{ padding: '8px 10px', borderBottom: '1px solid var(--border-color)' }}>WR%</th>
-                <th style={{ padding: '8px 10px', borderBottom: '1px solid var(--border-color)' }}>K/D</th>
-                <th style={{ padding: '8px 10px', borderBottom: '1px solid var(--border-color)' }}>ACS</th>
-                <th style={{ padding: '8px 10px', borderBottom: '1px solid var(--border-color)' }}>ADR</th>
-                <th style={{ padding: '8px 10px', borderBottom: '1px solid var(--border-color)' }}>HS%</th>
-                <th style={{ padding: '8px 10px', borderBottom: '1px solid var(--border-color)' }}>First Bloods/M</th>
-              </tr>
-            </thead>
-            <tbody>
-              {windows.map((w) => (
-                <tr key={w.window} style={{ color: '#fff' }}>
-                  <td style={{ padding: '8px 10px', borderBottom: '1px solid rgba(255,255,255,0.04)', fontFamily: 'var(--font-mono)' }}>Last {w.window}</td>
-                  <td style={{ padding: '8px 10px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{w.wins}W-{w.losses}L</td>
-                  <td style={{ padding: '8px 10px', borderBottom: '1px solid rgba(255,255,255,0.04)', color: (w.winRate ?? 0) >= 50 ? 'var(--accent-green)' : 'var(--accent-red)' }}>{w.winRate}%</td>
-                  <td style={{ padding: '8px 10px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{w.kd ?? '—'}</td>
-                  <td style={{ padding: '8px 10px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{w.acs ?? '—'}</td>
-                  <td style={{ padding: '8px 10px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{w.adr ?? '—'}</td>
-                  <td style={{ padding: '8px 10px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{w.hsPct != null ? `${w.hsPct}%` : '—'}</td>
-                  <td style={{ padding: '8px 10px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{w.firstBloodsPerMatch ?? '—'}</td>
+          <div className="touch-scroll" style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+              <thead>
+                <tr style={{ color: 'var(--text-muted)', textAlign: 'left' }}>
+                  <th style={{ padding: '8px 10px', borderBottom: '1px solid var(--border-color)' }}>Window</th>
+                  <th style={{ padding: '8px 10px', borderBottom: '1px solid var(--border-color)' }}>W/L</th>
+                  <th style={{ padding: '8px 10px', borderBottom: '1px solid var(--border-color)' }}>WR%</th>
+                  <th style={{ padding: '8px 10px', borderBottom: '1px solid var(--border-color)' }}>K/D</th>
+                  <th style={{ padding: '8px 10px', borderBottom: '1px solid var(--border-color)' }}>ACS</th>
+                  <th style={{ padding: '8px 10px', borderBottom: '1px solid var(--border-color)' }}>ADR</th>
+                  <th style={{ padding: '8px 10px', borderBottom: '1px solid var(--border-color)' }}>HS%</th>
+                  <th style={{ padding: '8px 10px', borderBottom: '1px solid var(--border-color)' }}>First Bloods/M</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {windows.map((w) => (
+                  <tr key={w.window} style={{ color: '#fff' }}>
+                    <td style={{ padding: '8px 10px', borderBottom: '1px solid rgba(255,255,255,0.04)', fontFamily: 'var(--font-mono)' }}>Last {w.window}</td>
+                    <td style={{ padding: '8px 10px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{w.wins}W-{w.losses}L</td>
+                    <td style={{ padding: '8px 10px', borderBottom: '1px solid rgba(255,255,255,0.04)', color: (w.winRate ?? 0) >= 50 ? 'var(--accent-green)' : 'var(--accent-red)' }}>{w.winRate}%</td>
+                    <td style={{ padding: '8px 10px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{w.kd ?? '—'}</td>
+                    <td style={{ padding: '8px 10px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{w.acs ?? '—'}</td>
+                    <td style={{ padding: '8px 10px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{w.adr ?? '—'}</td>
+                    <td style={{ padding: '8px 10px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{w.hsPct != null ? `${w.hsPct}%` : '—'}</td>
+                    <td style={{ padding: '8px 10px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{w.firstBloodsPerMatch ?? '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
 
         {deltas.length > 0 && (
