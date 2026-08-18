@@ -38,6 +38,18 @@ export const CompanionScreen: React.FC = () => {
   const [copied, setCopied] = useState<boolean>(false);
   const [scannerOpen, setScannerOpen] = useState<boolean>(false);
   const [manualInputCode, setManualInputCode] = useState<string>('');
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth <= 768;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // 1. Check for URL params (?code=... or ?pair=...) or existing saved session
   useEffect(() => {
@@ -233,13 +245,15 @@ export const CompanionScreen: React.FC = () => {
 
               {/* Action Buttons */}
               <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
-                <button
-                  onClick={() => setScannerOpen(true)}
-                  className="tactical-btn-secondary"
-                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '9px 12px', fontSize: '12px', fontWeight: 700 }}
-                >
-                  <Camera size={15} color="var(--accent-red)" /> Scan with Mobile
-                </button>
+                {isMobile && (
+                  <button
+                    onClick={() => setScannerOpen(true)}
+                    className="tactical-btn-secondary"
+                    style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '9px 12px', fontSize: '12px', fontWeight: 700 }}
+                  >
+                    <Camera size={15} color="var(--accent-red)" /> Scan with Mobile
+                  </button>
+                )}
                 <button
                   onClick={copyPairingUrl}
                   className="tactical-btn"
