@@ -179,11 +179,12 @@ export const LobbyRoster: React.FC = () => {
     );
   }
 
-  const players = data.players || [];
-  const myTeamId = players.find((p) => p.isPlayer)?.teamId;
-  const hasTeams = players.some((p) => p.teamId);
-  const allies = hasTeams ? players.filter((p) => p.teamId === myTeamId) : players;
-  const enemies = hasTeams ? players.filter((p) => p.teamId && p.teamId !== myTeamId) : [];
+  const players = Array.isArray(data.players) ? data.players : [];
+  const myPlayer = players.find((p) => p?.isPlayer);
+  const myTeamId = myPlayer?.teamId;
+  const hasTeams = players.some((p) => Boolean(p?.teamId));
+  const allies = hasTeams ? players.filter((p) => p?.teamId === myTeamId) : players;
+  const enemies = hasTeams ? players.filter((p) => p?.teamId && p?.teamId !== myTeamId) : [];
 
   return (
     <div style={{
@@ -195,7 +196,7 @@ export const LobbyRoster: React.FC = () => {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between'
       }}>
         <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, color: '#fff', fontSize: '13px', letterSpacing: '0.04em' }}>
-          {data.phase === 'AGENT_SELECT' ? 'AGENT SELECT — YOUR TEAM' : 'MATCH ROSTER'}
+          {data?.phase === 'AGENT_SELECT' ? 'AGENT SELECT — YOUR TEAM' : 'MATCH ROSTER'}
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           {score && score.ally !== null && (
@@ -215,17 +216,18 @@ export const LobbyRoster: React.FC = () => {
 
       {/* Team Columns (2 columns on desktop, stacked on mobile) */}
       <div className="grid-2-mobile" style={{ display: 'grid', gridTemplateColumns: enemies.length > 0 ? '1fr 1fr' : '1fr', gap: '16px', padding: '14px' }}>
-        <RosterColumn title="◆ YOUR TEAM" color="var(--accent-cyan, #00f0ff)" list={allies} />
-        {enemies.length > 0 && <RosterColumn title="◆ ENEMY TEAM" color="var(--accent-red, #ff4655)" list={enemies} />}
+        <RosterColumn title="◆ YOUR TEAM" color="var(--accent-cyan, #00f0ff)" list={allies || []} />
+        {enemies.length > 0 && <RosterColumn title="◆ ENEMY TEAM" color="var(--accent-red, #ff4655)" list={enemies || []} />}
       </div>
 
-
-      <div style={{
-        padding: '9px 16px', borderTop: '1px solid var(--border-color)',
-        fontSize: '10.5px', color: 'var(--text-muted)', lineHeight: 1.4
-      }}>
-        {data.note}
-      </div>
+      {data?.note && (
+        <div style={{
+          padding: '9px 16px', borderTop: '1px solid var(--border-color)',
+          fontSize: '10.5px', color: 'var(--text-muted)', lineHeight: 1.4
+        }}>
+          {data.note}
+        </div>
+      )}
     </div>
   );
 };

@@ -98,6 +98,29 @@ img { max-width: 100%; }
   min-height: 0;
   padding: 24px 28px 48px 28px;
   scroll-padding-bottom: 48px;
+  box-sizing: border-box;
+}
+.content-area:has(.coach-screen) {
+  padding: 16px 20px 16px 20px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.coach-screen {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 0% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  gap: 10px;
 }
 .app-topbar { gap: 20px; }
 .topbar-title { flex: 1 1 auto; }
@@ -255,8 +278,14 @@ tbody tr:hover { background: var(--surface-2); }
     scroll-padding-bottom: calc(80px + env(safe-area-inset-bottom, 16px)) !important;
   }
   .content-area:has(.coach-screen) {
-    padding: 10px 10px calc(76px + env(safe-area-inset-bottom, 12px)) 10px !important;
+    padding: 8px 8px calc(64px + env(safe-area-inset-bottom, 8px)) 8px !important;
     overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    box-sizing: border-box !important;
   }
   .app-topbar {
     padding: 0 10px !important;

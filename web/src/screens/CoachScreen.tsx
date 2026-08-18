@@ -383,10 +383,12 @@ export const CoachScreen: React.FC = () => {
     <div className="animate-fade-in coach-screen" style={{
       display: 'flex',
       flexDirection: 'column',
+      flex: '1 1 0%',
       height: '100%',
       maxHeight: '100%',
       minHeight: 0,
       overflow: 'hidden',
+      boxSizing: 'border-box',
       gap: '10px'
     }}>
       {/* Header Bar — Pinned */}
@@ -559,20 +561,22 @@ export const CoachScreen: React.FC = () => {
 
       {/* Messages Scroll Area */}
       <div
-        className="glass-panel"
+        className="glass-panel coach-messages-scroll-pane"
         role="log"
         aria-live="polite"
         aria-atomic="false"
         aria-label="Coach conversation"
         style={{
-          flex: 1,
+          flex: '1 1 0%',
           overflowY: 'auto',
+          overflowX: 'hidden',
           minHeight: 0,
           minWidth: 0,
-          padding: '24px',
+          padding: '20px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '20px'
+          gap: '16px',
+          boxSizing: 'border-box'
         }}
       >
         {messages.map((m, idx) => {
