@@ -21,12 +21,41 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { ToastContainer } from './components/ToastContainer';
 import { DataProvenanceBanner } from './components/DataProvenanceBanner';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MobileBottomNav } from './shell/MobileBottomNav';
 import { MobileDrawer } from './shell/MobileDrawer';
 
 export const App: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      const fullSearch = window.location.search;
+      const hashPart = window.location.hash;
+      const hashSearch = hashPart.includes('?') ? hashPart.substring(hashPart.indexOf('?')) : '';
+      const params = new URLSearchParams(fullSearch || hashSearch);
+
+      const code = params.get('code') || params.get('pair');
+      const player = params.get('player') || params.get('name') || params.get('ign');
+      const tag = params.get('tag');
+      const region = params.get('region');
+      const token = params.get('token');
+
+      if (code || player) {
+        const session = {
+          pairingCode: code || 'VALO99',
+          connected: true,
+          gameName: player || 'UrMomRpdMe',
+          gameTag: tag || 'help',
+          region: region || 'ap',
+          token,
+          pairedAt: Date.now()
+        };
+        localStorage.setItem('valorecon_companion_session', JSON.stringify(session));
+        window.dispatchEvent(new Event('valorecon_sync'));
+      }
+    } catch {}
+  }, []);
 
   return (
     <BrowserRouter>

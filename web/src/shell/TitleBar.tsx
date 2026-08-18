@@ -82,8 +82,14 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenDrawer }) => {
 
   useEffect(() => {
     pollStatus();
-    const interval = setInterval(pollStatus, 5000);
-    return () => clearInterval(interval);
+    const interval = setInterval(pollStatus, 4000);
+    window.addEventListener('valorecon_sync', pollStatus);
+    window.addEventListener('storage', pollStatus);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('valorecon_sync', pollStatus);
+      window.removeEventListener('storage', pollStatus);
+    };
   }, []);
 
   const routeInfo = ROUTE_TITLES[location.pathname] || {

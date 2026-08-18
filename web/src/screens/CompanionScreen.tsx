@@ -8,16 +8,13 @@ import {
   RefreshCw,
   Copy,
   Check,
-  QrCode,
   Camera,
   ShieldCheck,
   Radio,
   LogOut,
-  Target,
-  Layers,
-  Sparkles
+  ExternalLink
 } from 'lucide-react';
-import { getLiveMatch } from '../api/client';
+import { getLiveMatch, getRiotStatus } from '../api/client';
 import { QRCodeDisplay } from '../components/QRCodeDisplay';
 import { CompanionScannerModal } from '../components/CompanionScannerModal';
 
@@ -25,6 +22,10 @@ const SESSION_STORAGE_KEY = 'valorecon_companion_session';
 
 interface SessionData {
   pairingCode: string;
+  connected: boolean;
+  gameName: string;
+  gameTag: string;
+  region: string;
   token?: string;
   pairedAt: number;
 }
@@ -38,6 +39,12 @@ export const CompanionScreen: React.FC = () => {
   const [copied, setCopied] = useState<boolean>(false);
   const [scannerOpen, setScannerOpen] = useState<boolean>(false);
   const [manualInputCode, setManualInputCode] = useState<string>('');
+  const [riotPlayer, setRiotPlayer] = useState<{ gameName: string; gameTag: string; region: string }>({
+    gameName: 'UrMomRpdMe',
+    gameTag: 'help',
+    region: 'ap'
+  });
+
   const [isMobile, setIsMobile] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     return window.innerWidth <= 768;
@@ -51,14 +58,40 @@ export const CompanionScreen: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // 1. Check for URL params (?code=... or ?pair=...) or existing saved session
+  // 1. Fetch live Riot status from local sidecar if available on desktop
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.hash.split('?')[1] || window.location.search);
-    const codeFromUrl = urlParams.get('code') || urlParams.get('pair');
-    const tokenFromUrl = urlParams.get('token');
+    getRiotStatus().then((s) => {
+      if (s.connected && s.gameName) {
+        setRiotPlayer({
+          gameName: s.gameName,
+          gameTag: s.gameTag || 'help',
+          region: s.region || 'ap'
+        });
+      }
+    }).catch(() => {});
+  }, []);
 
-    if (codeFromUrl) {
-      completePairing(codeFromUrl, tokenFromUrl || undefined);
+  // 2. Check for URL params (?code=... or ?pair=...) or existing saved session
+  useEffect(() => {
+    const fullSearch = window.location.search;
+    const hashPart = window.location.hash;
+    const hashSearch = hashPart.includes('?') ? hashPart.substring(hashPart.indexOf('?')) : '';
+    const params = new URLSearchParams(fullSearch || hashSearch);
+
+    const codeFromUrl = params.get('code') || params.get('pair');
+    const playerFromUrl = params.get('player') || params.get('name') || params.get('ign');
+    const tagFromUrl = params.get('tag');
+    const regionFromUrl = params.get('region');
+    const tokenFromUrl = params.get('token');
+
+    if (codeFromUrl || playerFromUrl) {
+      completePairing(
+        codeFromUrl || 'VALO99',
+        playerFromUrl || undefined,
+        tagFromUrl || undefined,
+        regionFromUrl || undefined,
+        tokenFromUrl || undefined
+      );
       return;
     }
 
@@ -66,10 +99,10 @@ export const CompanionScreen: React.FC = () => {
       const saved = localStorage.getItem(SESSION_STORAGE_KEY);
       if (saved) {
         const session: SessionData = JSON.parse(saved);
-        if (session.pairingCode) {
-          setPairingCode(session.pairingCode);
+        if (session.pairingCode || session.connected) {
+          setPairingCode(session.pairingCode || 'VALO99');
           setPaired(true);
-          setStatusMessage(`Connected via persistent session (${session.pairingCode})`);
+          setStatusMessage(`Connected via persistent session: ${session.gameName || 'UrMomRpdMe'}#${session.gameTag || 'help'} (${session.pairingCode})`);
         }
       }
     } catch {
@@ -114,17 +147,27 @@ export const CompanionScreen: React.FC = () => {
     return () => clearInterval(interval);
   }, [pairingCode, paired]);
 
-  const completePairing = (code: string, token?: string) => {
+  const completePairing = (code: string, player?: string, tag?: string, region?: string, token?: string) => {
+    const finalPlayer = player || riotPlayer.gameName || 'UrMomRpdMe';
+    const finalTag = tag || riotPlayer.gameTag || 'help';
+    const finalRegion = region || riotPlayer.region || 'ap';
+
     setPairingCode(code);
     setPaired(true);
-    setStatusMessage(`Successfully paired: ${code}`);
+    setStatusMessage(`Successfully paired: ${finalPlayer}#${finalTag} (${code})`);
+
     try {
       const session: SessionData = {
         pairingCode: code,
+        connected: true,
+        gameName: finalPlayer,
+        gameTag: finalTag,
+        region: finalRegion,
         token,
         pairedAt: Date.now()
       };
       localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+      window.dispatchEvent(new Event('valorecon_sync'));
     } catch {
       // ignore
     }
@@ -133,6 +176,7 @@ export const CompanionScreen: React.FC = () => {
   const unpairDevice = () => {
     try {
       localStorage.removeItem(SESSION_STORAGE_KEY);
+      window.dispatchEvent(new Event('valorecon_sync'));
     } catch {
       // ignore
     }
@@ -141,11 +185,10 @@ export const CompanionScreen: React.FC = () => {
     generateCode();
   };
 
-  // Build the direct public pairing URL for Google Lens & QR Code
+  // Build the direct public pairing URL for Google Lens, QR Code, and Open in Browser
   const getPublicBaseUrl = () => {
     if (typeof window === 'undefined') return 'https://valorecon.pages.dev';
     const origin = window.location.origin;
-    // If running inside desktop app or local dev, use live Cloudflare Pages URL so mobile cameras can open it
     if (
       !origin ||
       origin.includes('localhost') ||
@@ -158,7 +201,7 @@ export const CompanionScreen: React.FC = () => {
     return origin;
   };
 
-  const pairingUrl = `${getPublicBaseUrl()}/#/companion?code=${pairingCode || 'VALO99'}`;
+  const pairingUrl = `${getPublicBaseUrl()}/companion?code=${encodeURIComponent(pairingCode || 'VALO99')}&player=${encodeURIComponent(riotPlayer.gameName)}&tag=${encodeURIComponent(riotPlayer.gameTag)}&region=${encodeURIComponent(riotPlayer.region)}`;
 
   const copyPairingUrl = () => {
     navigator.clipboard.writeText(pairingUrl).then(() => {
@@ -259,24 +302,51 @@ export const CompanionScreen: React.FC = () => {
               </div>
 
               {/* Action Buttons */}
-              <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
-                {isMobile && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
+                <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
+                  {isMobile && (
+                    <button
+                      onClick={() => setScannerOpen(true)}
+                      className="tactical-btn-secondary"
+                      style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '9px 12px', fontSize: '12px', fontWeight: 700 }}
+                    >
+                      <Camera size={15} color="var(--accent-red)" /> Scan with Mobile
+                    </button>
+                  )}
                   <button
-                    onClick={() => setScannerOpen(true)}
-                    className="tactical-btn-secondary"
-                    style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '9px 12px', fontSize: '12px', fontWeight: 700 }}
+                    onClick={copyPairingUrl}
+                    className="tactical-btn"
+                    style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '9px 12px', fontSize: '12px', fontWeight: 700, backgroundColor: copied ? 'var(--accent-green)' : 'var(--accent-red)' }}
                   >
-                    <Camera size={15} color="var(--accent-red)" /> Scan with Mobile
+                    {copied ? <Check size={15} /> : <Copy size={15} />}
+                    {copied ? 'Copied' : 'Copy Link'}
+                  </button>
+                </div>
+
+                {/* Open Web Companion in Browser Button (Desktop / Laptop only) */}
+                {!isMobile && (
+                  <button
+                    onClick={() => window.open(pairingUrl, '_blank')}
+                    className="tactical-btn-secondary"
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      padding: '10px 16px',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      backgroundColor: 'rgba(56, 189, 248, 0.12)',
+                      color: 'var(--accent-cyan)',
+                      border: '1px solid rgba(56, 189, 248, 0.35)',
+                      cursor: 'pointer',
+                      borderRadius: '6px'
+                    }}
+                  >
+                    <ExternalLink size={15} /> Open Web Companion in Browser
                   </button>
                 )}
-                <button
-                  onClick={copyPairingUrl}
-                  className="tactical-btn"
-                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '9px 12px', fontSize: '12px', fontWeight: 700, backgroundColor: copied ? 'var(--accent-green)' : 'var(--accent-red)' }}
-                >
-                  {copied ? <Check size={15} /> : <Copy size={15} />}
-                  {copied ? 'Copied' : 'Copy Link'}
-                </button>
               </div>
 
               {/* Manual Input Fallback */}
@@ -289,13 +359,12 @@ export const CompanionScreen: React.FC = () => {
                   maxLength={8}
                   style={{
                     flex: 1,
-                    background: 'rgba(0,0,0,0.4)',
-                    border: '1px solid var(--border-strong)',
-                    borderRadius: '4px',
-                    color: '#fff',
                     padding: '8px 12px',
-                    fontSize: '13px',
-                    fontFamily: 'var(--font-mono)',
+                    borderRadius: '6px',
+                    backgroundColor: 'rgba(0,0,0,0.4)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    color: '#fff',
+                    fontSize: '12px',
                     textAlign: 'center',
                     textTransform: 'uppercase'
                   }}
@@ -330,7 +399,7 @@ export const CompanionScreen: React.FC = () => {
                 SYNCED WITH VALORECON DESKTOP
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text-secondary)', maxWidth: '280px' }}>
-                Auto-reconnecting session active. Live radar and economy tips are streaming.
+                Auto-reconnecting session active: <strong>{riotPlayer.gameName}#{riotPlayer.gameTag}</strong>. Live radar and economy tips are streaming.
               </div>
             </div>
           )}
@@ -402,7 +471,7 @@ export const CompanionScreen: React.FC = () => {
               Scan QR with Google Lens or Camera
             </h4>
             <p style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5, margin: 0 }}>
-              Point Google Lens or your phone's camera at the QR code above. It automatically opens the companion web app.
+              Point Google Lens or your phone's camera at the QR code above. It automatically opens the companion web app and instantly pairs.
             </p>
           </div>
 
@@ -438,7 +507,7 @@ export const CompanionScreen: React.FC = () => {
       <CompanionScannerModal
         isOpen={scannerOpen}
         onClose={() => setScannerOpen(false)}
-        onScanSuccess={(code, token) => completePairing(code, token)}
+        onScanSuccess={(code, token) => completePairing(code, undefined, undefined, undefined, token)}
       />
     </div>
   );
