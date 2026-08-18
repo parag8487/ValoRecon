@@ -1,0 +1,25 @@
+{
+  "name": "@valorecon/cloud",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "node --import tsx --test src/tests/*.test.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@valorecon/contracts": "file:../contracts",
+    "express": "^4.21.2",
+    "cors": "^2.8.5",
+    "zod": "^3.25.76",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/cors": "^2.8.17",
+    "@types/ws": "^8.5.13",
+    "@types/node": "^22.10.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
