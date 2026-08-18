@@ -41,6 +41,7 @@ pub fn run() {
                 .inner_size(1280.0, 820.0)
                 .min_inner_size(960.0, 600.0)
                 .center()
+                .visible(true)
                 .initialization_script(&bootstrap_js)
                 .build()?;
 

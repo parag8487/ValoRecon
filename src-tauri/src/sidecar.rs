@@ -91,6 +91,13 @@ pub fn spawn_sidecar(port: u16, token: &str) -> Result<Child, std::io::Error> {
         .env("VALORECON_DEV_BOOTSTRAP", "0")
         .env("NODE_ENV", "production");
 
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        const CREATE_NO_WINDOW: u32 = 0x08000000;
+        cmd.creation_flags(CREATE_NO_WINDOW);
+    }
+
     cmd.spawn()
 }
 
