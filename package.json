@@ -8,7 +8,9 @@
     "build:server": "npm run build --prefix server",
     "build:web": "npm run build --prefix web",
     "build": "npm run build:server && npm run build:web",
+    "build:desktop": "cargo build --manifest-path src-tauri/Cargo.toml",
     "start": "concurrently -n \"SERVER,WEB\" -c \"red,cyan\" \"npm run start --prefix server\" \"npm run preview --prefix web\""
+
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

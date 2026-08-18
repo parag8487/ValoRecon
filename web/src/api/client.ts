@@ -1,16 +1,33 @@
-// Single source of truth for the API origin (override via VITE_API_BASE env).
-const metaEnv = (import.meta as any).env as Record<string, string | undefined> | undefined;
-const API_BASE = metaEnv?.VITE_API_BASE || 'http://localhost:8799/api';
+declare global {
+  interface Window {
+    __VALORECON_BOOTSTRAP__?: {
+      port: number;
+      token: string;
+    };
+  }
+}
+
+// Single source of truth for the API origin
+export function getApiBase(): string {
+  if (typeof window !== 'undefined' && window.__VALORECON_BOOTSTRAP__?.port) {
+    return `http://127.0.0.1:${window.__VALORECON_BOOTSTRAP__.port}/api`;
+  }
+  const metaEnv = (import.meta as any).env as Record<string, string | undefined> | undefined;
+  return metaEnv?.VITE_API_BASE || 'http://127.0.0.1:8799/api';
+}
+
+const API_BASE = getApiBase();
 
 // ---- Per-launch auth token -------------------------------------------------
-// The server generates a random token at boot and only the allowed dev origin
-// can read it (CORS). We attach it to every request so arbitrary local pages
-// can't drive the API (burning Gemini quota or reading Riot data).
 let launchToken: string | null = null;
 
-async function ensureToken(): Promise<string> {
+export async function ensureToken(): Promise<string> {
+  if (typeof window !== 'undefined' && window.__VALORECON_BOOTSTRAP__?.token) {
+    launchToken = window.__VALORECON_BOOTSTRAP__.token;
+    return launchToken;
+  }
   if (launchToken) return launchToken;
-  const res = await fetch(`${API_BASE}/auth/token`);
+  const res = await fetch(`${getApiBase()}/auth/token`);
   if (!res.ok) throw new Error('Failed to fetch auth token');
   launchToken = (await res.json()).token;
   return launchToken as string;
@@ -22,8 +39,9 @@ async function apiFetch(path: string, init: RequestInit = {}): Promise<Response>
     'x-valorecon-token': token,
     ...(init.headers as Record<string, string> | undefined),
   };
-  return fetch(`${API_BASE}${path}`, { ...init, headers });
+  return fetch(`${getApiBase()}${path}`, { ...init, headers });
 }
+
 
 import type {
   RiotStatusData,
