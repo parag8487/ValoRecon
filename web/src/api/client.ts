@@ -202,6 +202,20 @@ export async function getStore(): Promise<StoreData> {
   return res.json();
 }
 
+export async function getSkinMedia(query: { id?: string; name?: string; uuid?: string }): Promise<{
+  videoUrl: string | null;
+  imageUrl: string | null;
+  displayName: string | null;
+}> {
+  const params = new URLSearchParams();
+  if (query.id) params.set('id', query.id);
+  if (query.name) params.set('name', query.name);
+  if (query.uuid) params.set('uuid', query.uuid);
+  const res = await apiFetch(`/skin-media?${params.toString()}`);
+  if (!res.ok) throw new Error('Failed to fetch skin media');
+  return res.json();
+}
+
 export async function getWallet(): Promise<WalletData> {
   const res = await apiFetch(`/wallet`);
   if (!res.ok) throw new Error('Failed to fetch wallet');

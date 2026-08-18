@@ -11,7 +11,7 @@ import {
   Zap,
   Flame
 } from 'lucide-react';
-import { getStore, getWallet, StoreData, WalletData } from '../api/client';
+import { getStore, getWallet, getSkinMedia, StoreData, WalletData } from '../api/client';
 import { SafeImage } from '../components/SafeImage';
 
 export const StoreScreen: React.FC = () => {
@@ -61,30 +61,34 @@ export const StoreScreen: React.FC = () => {
     setInspectImage(offer.icon || null);
     setInspectLoading(true);
     try {
-      // 1. Try server endpoint
-      const res = await fetch(`/api/valorant/skin-media?id=${encodeURIComponent(offer.id)}&name=${encodeURIComponent(offer.name)}`);
-      if (res.ok) {
-        const data = await res.json();
+      // 1. Try server endpoint via authenticated client
+      const data = await getSkinMedia({ id: offer.id, name: offer.name }).catch(() => null);
+      if (data?.videoUrl || data?.imageUrl) {
         if (data.videoUrl) setInspectVideo(data.videoUrl);
         if (data.imageUrl) setInspectImage(data.imageUrl);
-        if (data.videoUrl || data.imageUrl) {
-          setInspectLoading(false);
-          return;
-        }
+        setInspectLoading(false);
+        return;
       }
-      // 2. Fallback: valorant-api.com directly
+
+      // 2. Direct fallback to valorant-api.com
       const response = await fetch('https://valorant-api.com/v1/weapons/skins');
       if (response.ok) {
         const payload = await response.json();
         const skins = Array.isArray(payload?.data) ? payload.data : [];
         const offerId = (offer.id || '').toLowerCase();
-        const offerName = (offer.name || '').toLowerCase();
-        const skin = skins.find((candidate: any) =>
-          candidate.uuid?.toLowerCase() === offerId ||
-          candidate.displayName?.toLowerCase() === offerName ||
-          candidate.levels?.some((lvl: any) => lvl.uuid?.toLowerCase() === offerId || lvl.displayName?.toLowerCase() === offerName) ||
-          candidate.chromas?.some((c: any) => c.uuid?.toLowerCase() === offerId || c.displayName?.toLowerCase() === offerName)
-        );
+        const offerName = (offer.name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const skin = skins.find((candidate: any) => {
+          const candId = (candidate.uuid || '').toLowerCase();
+          const candName = (candidate.displayName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+          return (
+            candId === offerId ||
+            candName === offerName ||
+            candName.includes(offerName) ||
+            offerName.includes(candName) ||
+            candidate.levels?.some((lvl: any) => (lvl.uuid || '').toLowerCase() === offerId || (lvl.displayName || '').toLowerCase().replace(/[^a-z0-9]/g, '') === offerName) ||
+            candidate.chromas?.some((c: any) => (c.uuid || '').toLowerCase() === offerId || (c.displayName || '').toLowerCase().replace(/[^a-z0-9]/g, '') === offerName)
+          );
+        });
         if (skin) {
           const levels = Array.isArray(skin.levels) ? skin.levels : [];
           const chromas = Array.isArray(skin.chromas) ? skin.chromas : [];
