@@ -71,6 +71,8 @@ export interface RiotSession {
 
 import { defaultStateStore } from '../storage/stateStore';
 import { lifecycle } from '../lifecycle';
+import { getConfig } from '../config';
+
 
 export interface AutoPickConfig {
   enabled: boolean;

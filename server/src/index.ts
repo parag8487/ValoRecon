@@ -41,8 +41,9 @@ export function createApp(customConfig?: Partial<AppConfig>) {
   const logger = createLogger('server');
   const app = express();
 
-  const launchToken = crypto.randomBytes(32).toString('hex');
+  const launchToken = process.env.VALORECON_LAUNCH_TOKEN || crypto.randomBytes(32).toString('hex');
   app.locals.launchToken = launchToken;
+
 
   const ALLOWED_ORIGINS = [
     'http://localhost:5173',

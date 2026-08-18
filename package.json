@@ -5,11 +5,19 @@
   "description": "ValoRecon — Your AI VALORANT coach & tactical companion",
   "scripts": {
     "dev": "concurrently -n \"SERVER,WEB\" -c \"red,cyan\" \"npm run dev --prefix server\" \"npm run dev --prefix web\"",
+    "test:contracts": "npm test --prefix packages/contracts",
+    "test:server": "npm test --prefix server",
+    "test:cloud": "npm test --prefix packages/cloud",
+    "test:all": "npm run test:contracts && npm run test:server && npm run test:cloud",
+    "build:contracts": "npm run build --prefix packages/contracts",
     "build:server": "npm run build --prefix server",
+    "build:cloud": "npm run build --prefix packages/cloud",
     "build:web": "npm run build --prefix web",
+    "build:all": "npm run build:contracts && npm run build:server && npm run build:cloud && npm run build:web",
     "build": "npm run build:server && npm run build:web",
     "build:desktop": "cargo build --manifest-path src-tauri/Cargo.toml",
     "start": "concurrently -n \"SERVER,WEB\" -c \"red,cyan\" \"npm run start --prefix server\" \"npm run preview --prefix web\""
+
 
   },
   "devDependencies": {
