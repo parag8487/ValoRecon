@@ -95,32 +95,59 @@ router.post('/riot/autopick', (req: Request, res: Response) => {
   res.json(updated);
 });
 
+import { getConfig } from '../config';
+
 router.post('/riot/select', async (req: Request, res: Response) => {
+  const config = getConfig();
+  if (!config.features.agentSelectAutomation) {
+    res.status(403).json({
+      error: {
+        code: 'VR-RIOT-403',
+        message: 'Agent-select automation is disabled by policy. ValoRecon operates as a compliant companion and does not automate game inputs.',
+        requestId: req.id,
+        retryable: false
+      }
+    });
+    return;
+  }
   const { agentUuid } = req.body;
   if (!agentUuid) {
-    res.status(400).json({ error: 'Missing agentUuid' });
+    res.status(400).json({ error: { code: 'VR-VALIDATION-400', message: 'Missing agentUuid', requestId: req.id } });
     return;
   }
   try {
     const result = await selectAgent(agentUuid);
     res.json(result);
   } catch (err: any) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ error: { code: 'VR-RIOT-400', message: err.message, requestId: req.id } });
   }
 });
 
 router.post('/riot/lock', async (req: Request, res: Response) => {
+  const config = getConfig();
+  if (!config.features.agentSelectAutomation) {
+    res.status(403).json({
+      error: {
+        code: 'VR-RIOT-403',
+        message: 'Agent-select automation is disabled by policy. ValoRecon operates as a compliant companion and does not automate game inputs.',
+        requestId: req.id,
+        retryable: false
+      }
+    });
+    return;
+  }
   const { agentUuid } = req.body;
   if (!agentUuid) {
-    res.status(400).json({ error: 'Missing agentUuid' });
+    res.status(400).json({ error: { code: 'VR-VALIDATION-400', message: 'Missing agentUuid', requestId: req.id } });
     return;
   }
   try {
     const result = await lockAgent(agentUuid);
     res.json(result);
   } catch (err: any) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ error: { code: 'VR-RIOT-400', message: err.message, requestId: req.id } });
   }
 });
+
 
 export default router;

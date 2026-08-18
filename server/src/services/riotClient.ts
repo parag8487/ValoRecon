@@ -157,6 +157,9 @@ export class BoundedCache<K, V> {
   }
 }
 
+export { BoundedCache as TtlLruCache };
+
+
 // -------------------------------------------------------------
 // Global PVP Request Throttler & Queue (Fix 2: Rate Limiting)
 // Max concurrency: 3, Min spacing between request starts: 70ms
@@ -2341,56 +2344,58 @@ export function startAutoPickPoller(): () => void {
   }
 
   pollerInterval = setInterval(async () => {
-    if (autoPickConfig.enabled && autoPickConfig.agentUuid) {
-      try {
-        const lock = readLockfile();
-        if (!lock) return;
+    try {
+      const lock = readLockfile();
+      if (!lock) return;
 
-        // 1. Probe Pregame (Agent Select)
-        const pregame = await fetchLivePregame();
-        if (pregame?.inPregame) {
-          const myPlayer = (pregame.allyComp || []).find((p: any) => p.isPlayer);
-          if (myPlayer) {
-            if (myPlayer.characterSelectionState === 'locked') {
-              if (autoPickConfig.matchState !== 'PREGAME_LOCKED') {
-                autoPickConfig.matchState = 'PREGAME_LOCKED';
-                autoPickConfig.lastActionStatus = `🔒 Locked in ${myPlayer.agentName || autoPickConfig.agentName}! Agent Select in progress.`;
-                autoPickConfig.lastActionTimestamp = Date.now();
-                savePersistedConfig();
-              }
-            } else if (autoPickConfig.mode === 'lock') {
+      const config = getConfig();
+
+      // 1. Probe Pregame (Agent Select)
+      const pregame = await fetchLivePregame();
+      if (pregame?.inPregame) {
+        const myPlayer = (pregame.allyComp || []).find((p: any) => p.isPlayer);
+        if (myPlayer) {
+          if (myPlayer.characterSelectionState === 'locked') {
+            if (autoPickConfig.matchState !== 'PREGAME_LOCKED') {
+              autoPickConfig.matchState = 'PREGAME_LOCKED';
+              autoPickConfig.lastActionStatus = `🔒 Locked in ${myPlayer.agentName || autoPickConfig.agentName || 'Agent'}! Agent Select in progress.`;
+              autoPickConfig.lastActionTimestamp = Date.now();
+              savePersistedConfig();
+            }
+          } else if (config.features.agentSelectAutomation && autoPickConfig.enabled && autoPickConfig.agentUuid) {
+            if (autoPickConfig.mode === 'lock') {
               await lockAgent(autoPickConfig.agentUuid);
             } else if (autoPickConfig.mode === 'hover' && myPlayer.characterSelectionState !== 'selected') {
               await selectAgent(autoPickConfig.agentUuid);
             }
           }
-        } else {
-          // 2. Probe Core Game (Active Match In-Progress)
-          const session = await getRiotSession();
-          if (session) {
-            const playerCoreRes = await makePvpRequest<any>(
-              `/core-game/v1/players/${session.puuid}`,
-              { isGlz: true }
-            );
-            if (playerCoreRes.status === 200 && playerCoreRes.data?.MatchID) {
-              if (autoPickConfig.matchState !== 'IN_GAME') {
-                autoPickConfig.matchState = 'IN_GAME';
-                autoPickConfig.lastActionStatus = `🎮 Match Started with ${autoPickConfig.agentName || 'Agent'}! Live match in progress.`;
-                autoPickConfig.lastActionTimestamp = Date.now();
-                savePersistedConfig();
-              }
-            } else if (autoPickConfig.matchState === 'IN_GAME' || autoPickConfig.matchState === 'PREGAME_LOCKED') {
-              // Returned back to lobby
-              autoPickConfig.matchState = 'IDLE';
-              autoPickConfig.lastActionStatus = `${autoPickConfig.mode === 'lock' ? '🔒 Instalock armed for ' : '👁️ Hover armed for '}${autoPickConfig.agentName}! Ready for next match.`;
+        }
+      } else {
+        // 2. Probe Core Game (Active Match In-Progress)
+        const session = await getRiotSession();
+        if (session) {
+          const playerCoreRes = await makePvpRequest<any>(
+            `/core-game/v1/players/${session.puuid}`,
+            { isGlz: true }
+          );
+          if (playerCoreRes.status === 200 && playerCoreRes.data?.MatchID) {
+            if (autoPickConfig.matchState !== 'IN_GAME') {
+              autoPickConfig.matchState = 'IN_GAME';
+              autoPickConfig.lastActionStatus = `🎮 Match Started with ${autoPickConfig.agentName || 'Agent'}! Live match in progress.`;
               autoPickConfig.lastActionTimestamp = Date.now();
               savePersistedConfig();
             }
+          } else if (autoPickConfig.matchState === 'IN_GAME' || autoPickConfig.matchState === 'PREGAME_LOCKED') {
+            // Returned back to lobby
+            autoPickConfig.matchState = 'IDLE';
+            autoPickConfig.lastActionStatus = `${autoPickConfig.agentName ? `${autoPickConfig.agentName} selected in advisor` : 'Ready for next match'}.`;
+            autoPickConfig.lastActionTimestamp = Date.now();
+            savePersistedConfig();
           }
         }
-      } catch (e) {
-        // isolated background polling catch
       }
+    } catch (e) {
+      // isolated background polling catch
     }
   }, 2500);
 

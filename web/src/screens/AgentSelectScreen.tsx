@@ -50,13 +50,14 @@ export const AgentSelectScreen: React.FC = () => {
       // ignore
     }
     return {
-      enabled: true,
+      enabled: false,
       agentUuid: '320b2a48-4d9b-a075-30f1-1f93a9b638fa', // Sova
       agentName: 'Sova',
-      mode: 'lock',
+      mode: 'hover',
       matchState: 'IDLE'
     };
   });
+
 
   // Action status states
   const [actionLoading, setActionLoading] = useState(false);
