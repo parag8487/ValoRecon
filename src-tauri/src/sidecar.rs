@@ -56,27 +56,35 @@ pub async fn poll_health(port: u16, token: &str, max_wait_ms: u64) -> bool {
 }
 
 pub fn spawn_sidecar(port: u16, token: &str) -> Result<Child, std::io::Error> {
-    let mut server_entry = std::env::current_dir()?.join("server").join("dist").join("index.js");
+    let mut server_entry = std::path::PathBuf::from("server/dist/index.js");
 
+    let mut search_roots = Vec::new();
     if let Ok(exe_path) = std::env::current_exe() {
         if let Some(exe_dir) = exe_path.parent() {
-            let candidates = [
-                exe_dir.join("resources").join("server").join("dist").join("index.js"),
-                exe_dir.join("resources").join("server.js"),
-                exe_dir.join("server").join("dist").join("index.js"),
-                exe_dir.join("dist").join("index.js"),
-            ];
-            for cand in candidates {
-                if cand.exists() {
-                    server_entry = cand;
-                    break;
-                }
+            search_roots.extend(exe_dir.ancestors().map(|p| p.to_path_buf()));
+        }
+    }
+    if let Ok(cwd) = std::env::current_dir() {
+        search_roots.extend(cwd.ancestors().map(|p| p.to_path_buf()));
+    }
+
+    'outer: for root in search_roots {
+        let candidates = [
+            root.join("resources").join("server").join("dist").join("index.js"),
+            root.join("resources").join("server.js"),
+            root.join("server").join("dist").join("index.js"),
+            root.join("dist").join("index.js"),
+        ];
+        for cand in candidates {
+            if cand.exists() {
+                server_entry = cand;
+                break 'outer;
             }
         }
     }
 
     let mut cmd = Command::new("node");
-    cmd.arg(server_entry)
+    cmd.arg(&server_entry)
         .env("PORT", port.to_string())
         .env("HOST", "127.0.0.1")
         .env("VALORECON_LAUNCH_TOKEN", token)

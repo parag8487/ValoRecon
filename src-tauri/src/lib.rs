@@ -45,6 +45,8 @@ pub fn run() {
                 .build()?;
 
             let _ = win.show();
+            let _ = win.unminimize();
+            let _ = win.set_focus();
 
             // Poll health in background
             let token_clone = token.clone();
