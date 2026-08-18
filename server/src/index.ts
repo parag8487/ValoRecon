@@ -3,6 +3,15 @@ import cors from 'cors';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 
+import { loadConfig, getConfig, AppConfig } from './config';
+import { createLogger } from './logger';
+import { requestIdMiddleware } from './middleware/requestId';
+import { securityHeadersMiddleware } from './middleware/securityHeaders';
+import { createRateLimiter } from './middleware/rateLimiter';
+import { createAuthMiddleware } from './middleware/auth';
+import { notFoundMiddleware, errorHandlerMiddleware } from './middleware/errorHandler';
+import { lifecycle } from './lifecycle';
+
 import valorantRouter from './routes/valorant';
 import chatRouter from './routes/chat';
 import matchAnalysisRouter from './routes/matchAnalysis';
@@ -20,32 +29,33 @@ import premiumRouter from './routes/premium';
 import coachRouter from './routes/coach';
 import feedbackRouter from './routes/feedback';
 import lineupsRouter from './routes/lineups';
-import { startAutoPickPoller } from './services/riotClient';
+import { startAutoPickPoller, stopAutoPickPoller } from './services/riotClient';
 
 dotenv.config();
 
 // ---------------------------------------------------------------------------
 // App factory (exported so tests can boot an ephemeral instance).
 // ---------------------------------------------------------------------------
-export function createApp() {
+export function createApp(customConfig?: Partial<AppConfig>) {
+  const config = customConfig ? loadConfig(customConfig) : getConfig();
+  const logger = createLogger('server');
   const app = express();
 
-  // Per-launch auth token: generated at boot, never persisted. The web app must
-  // fetch it from /api/auth/token (protected by the CORS allowlist below) and
-  // send it as `x-valorecon-token` on every API call. This blocks arbitrary local
-  // pages/processes from driving the server (burning Gemini quota, reading Riot
-  // data) even if they manage to reach the port.
   const launchToken = crypto.randomBytes(32).toString('hex');
   app.locals.launchToken = launchToken;
 
   const ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
+    'tauri://localhost',
+    'http://tauri.localhost',
   ];
+
+  app.use(requestIdMiddleware);
+  app.use(securityHeadersMiddleware);
 
   app.use(cors({
     origin(origin, callback) {
-      // Allow same-origin (no Origin header) and the Vite dev server.
       if (!origin || ALLOWED_ORIGINS.includes(origin)) {
         callback(null, true);
       } else {
@@ -53,27 +63,59 @@ export function createApp() {
       }
     },
   }));
+
+  app.use(createRateLimiter({ windowMs: 60 * 1000, max: 600, keyPrefix: 'api-global' }));
   app.use(express.json({ limit: '5mb' }));
 
-  // Auth middleware — everything under /api except health + token bootstrap.
-  app.use('/api', (req, res, next) => {
-    if (req.path === '/health' || req.path === '/auth/token') return next();
-    const token = req.headers['x-valorecon-token'] as string | undefined;
-    if (!token || token !== launchToken) {
-      res.status(401).json({ error: 'Unauthorized: missing or invalid x-valorecon-token header' });
-      return;
-    }
-    next();
-  });
+  // Auth middleware
+  app.use('/api', createAuthMiddleware(() => app.locals.launchToken as string));
 
-  // Token bootstrap (CORS-protected — only the dev frontend can read it).
+  // Token bootstrap (development-only)
   app.get('/api/auth/token', (_req, res) => {
     res.json({ token: launchToken });
   });
 
   // Health Check
   app.get('/api/health', (_req, res) => {
-    res.json({ ok: true });
+    res.json({
+      ok: true,
+      status: 'ready',
+      agentVersion: '1.0.0',
+      protocolVersion: 'v1',
+      components: {
+        agent: 'ready',
+        storage: 'ready'
+      }
+    });
+  });
+
+  // Capabilities
+  app.get('/api/capabilities', (_req, res) => {
+    res.json({
+      version: '1.0.0',
+      protocolVersion: 'v1',
+      capabilities: [
+        'agent.health',
+        'agent.capabilities',
+        'game.public_data',
+        'riot.local_reads',
+        'coach.deterministic',
+        'coach.chat_stream',
+        'analysis.ai_report',
+        'settings.local_state'
+      ],
+      features: {
+        agentSelectAutomation: config.features.agentSelectAutomation
+      }
+    });
+  });
+
+  // Graceful shutdown endpoint
+  app.post('/api/agent/shutdown', async (_req, res) => {
+    res.json({ ok: true, message: 'Shutting down agent' });
+    setTimeout(() => {
+      lifecycle.shutdown();
+    }, 50);
   });
 
   // Valorant API Proxies
@@ -105,16 +147,34 @@ export function createApp() {
   app.use('/api', questsRouter);
   app.use('/api', premiumRouter);
 
+  // 404 handler for unknown routes
+  app.use(notFoundMiddleware);
+
+  // Error handler middleware (never leaks stack traces)
+  app.use(errorHandlerMiddleware);
+
   return app;
 }
 
 // Only listen when run directly (not when imported by tests).
 if (require.main === module && process.env.VALORECON_TEST !== '1') {
+  const config = getConfig();
+  const logger = createLogger('main');
   const app = createApp();
-  const PORT = parseInt(process.env.PORT || '8799', 10);
-  const HOST = process.env.HOST || '127.0.0.1';
   startAutoPickPoller();
-  app.listen(PORT, HOST, () => {
-    console.log(`ValoRecon server running on http://${HOST}:${PORT}`);
+  
+  const server = app.listen(config.port, config.host, () => {
+    lifecycle.setState('SERVING');
+    logger.info('Server started', `ValoRecon Agent listening on http://${config.host}:${config.port}`);
   });
+
+  const handleSignal = async (signal: string) => {
+    logger.info('Received shutdown signal', `Signal: ${signal}`);
+    await lifecycle.shutdown(server);
+    process.exit(0);
+  };
+
+  process.on('SIGINT', () => handleSignal('SIGINT'));
+  process.on('SIGTERM', () => handleSignal('SIGTERM'));
 }
+

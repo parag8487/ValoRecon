@@ -1,20 +1,24 @@
 import { Router, Request, Response } from 'express';
-import fs from 'fs';
-import path from 'path';
+import { defaultStateStore } from '../storage/stateStore';
+import { createLogger } from '../logger';
 
 const router = Router();
-
-const FEEDBACK_FILE = path.join(__dirname, '..', '..', 'data', 'feedback.jsonl');
+const logger = createLogger('feedback');
 
 /**
- * Capture 👍/👎 feedback on coach responses. Appended to a local JSONL file
- * (server/data/ is gitignored) — this becomes the dataset for improving the
- * coach over time.
+ * Capture 👍/👎 feedback on coach responses. Appended to local JSONL storage.
  */
 router.post('/feedback', (req: Request, res: Response) => {
   const { messageId, rating, category, comment, matchId } = req.body || {};
   if (!messageId || !['up', 'down'].includes(rating)) {
-    res.status(400).json({ error: 'messageId and rating ("up"|"down") are required' });
+    res.status(400).json({
+      error: {
+        code: 'VR-VALIDATION-400',
+        message: 'messageId and rating ("up"|"down") are required',
+        requestId: req.id,
+        retryable: false
+      }
+    });
     return;
   }
 
@@ -28,15 +32,20 @@ router.post('/feedback', (req: Request, res: Response) => {
   };
 
   try {
-    if (!fs.existsSync(path.dirname(FEEDBACK_FILE))) {
-      fs.mkdirSync(path.dirname(FEEDBACK_FILE), { recursive: true });
-    }
-    fs.appendFileSync(FEEDBACK_FILE, JSON.stringify(entry) + '\n', 'utf8');
+    defaultStateStore.appendJsonLine('feedback.jsonl', entry);
     res.json({ ok: true });
   } catch (e: any) {
-    console.error('Failed to save feedback:', e);
-    res.status(500).json({ error: e.message || 'Failed to save feedback' });
+    logger.error('Failed to save feedback', e.message);
+    res.status(500).json({
+      error: {
+        code: 'VR-STORAGE-507',
+        message: e.message || 'Failed to save feedback',
+        requestId: req.id,
+        retryable: false
+      }
+    });
   }
 });
 
 export default router;
+

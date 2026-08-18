@@ -10,30 +10,18 @@ import { buildRetrievalContext, buildLiveMatchContext, computeTrends } from './c
 
 dotenv.config();
 
-// ---- Runtime AI config (key + model), persisted to disk, overrides env ----
-const AI_CONFIG_FILE = path.join(__dirname, '..', '..', 'data', 'ai_config.json');
-// Analysis reports are persisted so the coach can reference them later.
-const REPORTS_DIR = path.join(__dirname, '..', '..', 'data', 'reports');
+import { defaultStateStore } from '../storage/stateStore';
 
 interface AiConfig { apiKey: string; model: string; tone: string; }
 
 function loadAiConfig(): AiConfig {
-  try {
-    if (fs.existsSync(AI_CONFIG_FILE)) {
-      const d = JSON.parse(fs.readFileSync(AI_CONFIG_FILE, 'utf8'));
-      return { apiKey: d.apiKey || '', model: d.model || '', tone: d.tone || 'analytical' };
-    }
-  } catch (e) { /* ignore */ }
-  return { apiKey: '', model: '', tone: 'analytical' };
+  return defaultStateStore.readJson<AiConfig>('ai_config.json', { apiKey: '', model: '', tone: 'analytical' });
 }
 
 function saveAiConfig() {
-  try {
-    const dir = path.dirname(AI_CONFIG_FILE);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(AI_CONFIG_FILE, JSON.stringify(aiConfig, null, 2), 'utf8');
-  } catch (e) { /* ignore */ }
+  defaultStateStore.writeJsonAtomic('ai_config.json', aiConfig);
 }
+
 
 let aiConfig: AiConfig = loadAiConfig();
 
@@ -271,18 +259,13 @@ const COACH_CONTEXT_TTL = 60 * 1000; // 60 seconds cache
 
 /** Latest stored AI match-analysis report for a match id, if any. */
 function loadLatestReportFor(matchIds: string[]): any | null {
-  try {
-    if (!fs.existsSync(REPORTS_DIR)) return null;
-    for (const id of matchIds) {
-      const f = path.join(REPORTS_DIR, `${sanitizeFilePart(id)}.json`);
-      if (fs.existsSync(f)) {
-        const d = JSON.parse(fs.readFileSync(f, 'utf8'));
-        if (d?.report) return d.report;
-      }
-    }
-  } catch (e) { /* ignore */ }
+  for (const id of matchIds) {
+    const d = defaultStateStore.getReport(id);
+    if (d?.report) return d.report;
+  }
   return null;
 }
+
 
 function sanitizeFilePart(s: string): string {
   return String(s || 'match').replace(/[^a-zA-Z0-9_-]/g, '_');
@@ -591,15 +574,15 @@ export function buildMatchContext(match: any): any {
 }
 
 function persistReport(matchId: string, model: string, report: any) {
-  try {
-    if (!fs.existsSync(REPORTS_DIR)) fs.mkdirSync(REPORTS_DIR, { recursive: true });
-    fs.writeFileSync(
-      path.join(REPORTS_DIR, `${sanitizeFilePart(matchId)}.json`),
-      JSON.stringify({ matchId, model, version: ANALYSIS_PROMPT_VERSION, createdAt: new Date().toISOString(), report }, null, 2),
-      'utf8'
-    );
-  } catch (e) { /* ignore */ }
+  defaultStateStore.saveReport(matchId, {
+    matchId,
+    model,
+    version: ANALYSIS_PROMPT_VERSION,
+    createdAt: new Date().toISOString(),
+    report
+  });
 }
+
 
 export function getCachedAnalysis(matchId: string, model: string): any | null {
   const key = `${matchId}|${model}|${ANALYSIS_PROMPT_VERSION}`;
