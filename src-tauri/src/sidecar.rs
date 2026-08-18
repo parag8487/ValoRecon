@@ -56,10 +56,24 @@ pub async fn poll_health(port: u16, token: &str, max_wait_ms: u64) -> bool {
 }
 
 pub fn spawn_sidecar(port: u16, token: &str) -> Result<Child, std::io::Error> {
-    let server_entry = std::env::current_dir()?
-        .join("server")
-        .join("dist")
-        .join("index.js");
+    let mut server_entry = std::env::current_dir()?.join("server").join("dist").join("index.js");
+
+    if let Ok(exe_path) = std::env::current_exe() {
+        if let Some(exe_dir) = exe_path.parent() {
+            let candidates = [
+                exe_dir.join("resources").join("server").join("dist").join("index.js"),
+                exe_dir.join("resources").join("server.js"),
+                exe_dir.join("server").join("dist").join("index.js"),
+                exe_dir.join("dist").join("index.js"),
+            ];
+            for cand in candidates {
+                if cand.exists() {
+                    server_entry = cand;
+                    break;
+                }
+            }
+        }
+    }
 
     let mut cmd = Command::new("node");
     cmd.arg(server_entry)

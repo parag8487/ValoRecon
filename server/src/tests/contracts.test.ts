@@ -26,7 +26,7 @@ import {
   AiSettingsSchema,
   AiUsageSchema,
   AgentAdvisorResponseSchema
-} from '../../../packages/contracts/src/index';
+} from '@valorecon/contracts';
 
 let server: Server;
 let base = '';

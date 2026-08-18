@@ -16,9 +16,14 @@
     "build:all": "npm run build:contracts && npm run build:server && npm run build:cloud && npm run build:web",
     "build": "npm run build:server && npm run build:web",
     "build:desktop": "cargo build --manifest-path src-tauri/Cargo.toml",
+    "build:desktop:release": "cargo build --release --manifest-path src-tauri/Cargo.toml",
+    "release:sign": "node scripts/generate-update-manifest.js",
+    "release:security-test": "node scripts/test-update-security.js",
+    "release:clean-test": "node scripts/validate-release-install.js",
+    "release:sbom": "node scripts/generate-sbom.js",
+    "release:checksums": "node scripts/generate-checksums.js",
+    "release:verify": "npm run test:all && npm run release:security-test && npm run release:clean-test",
     "start": "concurrently -n \"SERVER,WEB\" -c \"red,cyan\" \"npm run start --prefix server\" \"npm run preview --prefix web\""
-
-
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

@@ -13,8 +13,11 @@ export function timingSafeEqual(a: string, b: string): boolean {
 
 export function createAuthMiddleware(getExpectedToken: () => string) {
   return (req: Request, res: Response, next: NextFunction) => {
-    // Open endpoints
-    if (req.path === '/health' || req.path === '/capabilities') {
+    // Open endpoints (health & capabilities)
+    const p = req.path;
+    const orig = req.originalUrl ? req.originalUrl.split('?')[0] : '';
+    if (p === '/health' || p === '/capabilities' || p === '/api/health' || p === '/api/capabilities' ||
+        orig === '/health' || orig === '/capabilities' || orig === '/api/health' || orig === '/api/capabilities') {
       return next();
     }
 

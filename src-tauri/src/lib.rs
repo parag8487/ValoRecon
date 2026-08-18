@@ -6,7 +6,7 @@ use sidecar::{
     SidecarProcess,
 };
 use std::sync::{Arc, Mutex};
-use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder};
+use tauri::{WebviewUrl, WebviewWindowBuilder};
 
 pub fn run() {
     let shared_sidecar: Arc<Mutex<Option<SidecarProcess>>> = Arc::new(Mutex::new(None));
