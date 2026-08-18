@@ -211,11 +211,22 @@ export const CompanionScreen: React.FC = () => {
   };
 
   const openInSystemBrowser = async () => {
+    // 1. Native injected Tauri opener (direct Windows ShellExecute)
+    if (typeof (window as any).__OPEN_URL__ === 'function') {
+      const opened = (window as any).__OPEN_URL__(pairingUrl);
+      if (opened) return;
+    }
+
+    // 2. Local Sidecar Backend HTTP POST
     try {
-      // Send request to local sidecar backend to invoke OS ShellExecute and launch default browser
-      const res = await fetch('http://127.0.0.1:8799/api/open-browser', {
+      const port = (window as any).__VALORECON_BOOTSTRAP__?.port || 8799;
+      const token = (window as any).__VALORECON_BOOTSTRAP__?.token;
+      const res = await fetch(`http://127.0.0.1:${port}/api/open-browser`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'x-valorecon-token': token } : {})
+        },
         body: JSON.stringify({ url: pairingUrl })
       }).catch(() => null);
 
@@ -224,7 +235,7 @@ export const CompanionScreen: React.FC = () => {
       }
     } catch {}
 
-    // Fallback if running directly in a standard browser tab
+    // 3. Fallback if running directly in a standard browser tab
     window.open(pairingUrl, '_blank');
   };
 

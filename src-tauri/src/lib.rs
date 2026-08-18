@@ -8,12 +8,33 @@ use sidecar::{
 use std::sync::{Arc, Mutex};
 use tauri::{WebviewUrl, WebviewWindowBuilder};
 
+#[tauri::command]
+fn open_external_url(url: String) -> Result<(), String> {
+    #[cfg(target_os = "windows")]
+    {
+        use std::os::windows::process::CommandExt;
+        const CREATE_NO_WINDOW: u32 = 0x08000000;
+        let clean = url.trim().to_string();
+        std::process::Command::new("cmd")
+            .args(["/C", "start", "", &clean])
+            .creation_flags(CREATE_NO_WINDOW)
+            .spawn()
+            .map_err(|e| e.to_string())?;
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        let _ = std::process::Command::new("xdg-open").arg(&url).spawn();
+    }
+    Ok(())
+}
+
 pub fn run() {
     let shared_sidecar: Arc<Mutex<Option<SidecarProcess>>> = Arc::new(Mutex::new(None));
     let shared_for_setup = Arc::clone(&shared_sidecar);
     let shared_for_exit = Arc::clone(&shared_sidecar);
 
     tauri::Builder::default()
+        .invoke_handler(tauri::generate_handler![open_external_url])
         .setup(move |app| {
             let port = allocate_free_port();
             let token = generate_launch_token();
@@ -32,7 +53,7 @@ pub fn run() {
 
             // Build main window with bootstrap injection
             let bootstrap_js = format!(
-                "window.__VALORECON_BOOTSTRAP__ = {{ port: {}, token: '{}' }};",
+                "window.__VALORECON_BOOTSTRAP__ = {{ port: {}, token: '{}' }}; window.__OPEN_URL__ = function(u) {{ try {{ if (window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke) {{ window.__TAURI_INTERNALS__.invoke('open_external_url', {{ url: u }}); return true; }} }} catch(e) {{}} return false; }};",
                 port, token
             );
 
