@@ -70,8 +70,9 @@ pub fn spawn_sidecar(port: u16, token: &str) -> Result<Child, std::io::Error> {
 
     'outer: for root in search_roots {
         let candidates = [
-            root.join("resources").join("server").join("dist").join("index.js"),
             root.join("resources").join("server.js"),
+            root.join("server.js"),
+            root.join("resources").join("server").join("dist").join("index.js"),
             root.join("server").join("dist").join("index.js"),
             root.join("dist").join("index.js"),
         ];

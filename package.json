@@ -10,7 +10,7 @@
     "test:cloud": "npm test --prefix packages/cloud",
     "test:all": "npm run test:contracts && npm run test:server && npm run test:cloud",
     "build:contracts": "npm run build --prefix packages/contracts",
-    "build:server": "npm run build --prefix server",
+    "build:server": "npm run build --prefix server && npx esbuild server/src/index.ts --bundle --platform=node --target=node18 --outfile=src-tauri/resources/server.js",
     "build:cloud": "npm run build --prefix packages/cloud",
     "build:web": "npm run build --prefix web",
     "build:all": "npm run build:contracts && npm run build:server && npm run build:cloud && npm run build:web",
