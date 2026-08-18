@@ -1,0 +1,125 @@
+{
+  "weapons": {
+    "Classic": {
+      "skinName": "Prime Classic",
+      "chromaName": "Level 4 (Gold & Cyan)",
+      "icon": "https://media.valorant-api.com/weaponskins/f4a0c8ce-4122-38d0-062a-dc853efaa76f/displayicon.png",
+      "buddy": "Radiant Immortal Gunbuddy"
+    },
+    "Shorty": {
+      "skinName": "Araxys Shorty",
+      "chromaName": "Black / Red",
+      "icon": "https://media.valorant-api.com/weaponskins/5c9860b8-4c9f-3536-f08a-669bfe38a6a2/displayicon.png",
+      "buddy": null
+    },
+    "Frenzy": {
+      "skinName": "Glitchpop Frenzy",
+      "chromaName": "Default Gold",
+      "icon": "https://media.valorant-api.com/weaponskins/22c06950-482a-e889-4977-cfb53b81ebaa/displayicon.png",
+      "buddy": null
+    },
+    "Ghost": {
+      "skinName": "Sovereign Ghost",
+      "chromaName": "Level 4 (White / Gold)",
+      "icon": "https://media.valorant-api.com/weaponskins/14bca8db-4e28-2d02-23c2-d3b5b6f37910/displayicon.png",
+      "buddy": "Ascendant Coin Buddy"
+    },
+    "Sheriff": {
+      "skinName": "Kuronami Sheriff",
+      "chromaName": "Level 4 Water Strike",
+      "icon": "https://media.valorant-api.com/weaponskins/22c06950-482a-e889-4977-cfb53b81ebaa/displayicon.png",
+      "buddy": "Tactibear"
+    },
+    "Stinger": {
+      "skinName": "Sovereign Stinger",
+      "chromaName": "Default",
+      "icon": "https://media.valorant-api.com/weaponskins/cbe532f5-46eb-4604-8176-aeb56157fbe1/displayicon.png",
+      "buddy": null
+    },
+    "Spectre": {
+      "skinName": "Prime Spectre",
+      "chromaName": "Level 4 (Yellow)",
+      "icon": "https://media.valorant-api.com/weaponskins/cbe532f5-46eb-4604-8176-aeb56157fbe1/displayicon.png",
+      "buddy": "Dan the Penguin"
+    },
+    "Bucky": {
+      "skinName": "Origin Bucky",
+      "chromaName": "Default",
+      "icon": "https://media.valorant-api.com/weaponskins/3c051a3d-4c31-c4be-a6b1-09854736f86d/displayicon.png",
+      "buddy": null
+    },
+    "Judge": {
+      "skinName": "Elderflame Judge",
+      "chromaName": "Level 4 Flame",
+      "icon": "https://media.valorant-api.com/weaponskins/3c051a3d-4c31-c4be-a6b1-09854736f86d/displayicon.png",
+      "buddy": null
+    },
+    "Bulldog": {
+      "skinName": "Protocol 781-A Bulldog",
+      "chromaName": "Level 5 Voice Over",
+      "icon": "https://media.valorant-api.com/weaponskins/f4a0c8ce-4122-38d0-062a-dc853efaa76f/displayicon.png",
+      "buddy": null
+    },
+    "Guardian": {
+      "skinName": "Reaver Guardian",
+      "chromaName": "Level 4 Purple Soul",
+      "icon": "https://media.valorant-api.com/weaponskins/3c501170-4966-5120-d3ff-e18e87498c8c/displayicon.png",
+      "buddy": "Viper Vial"
+    },
+    "Phantom": {
+      "skinName": "Prime//2.0 Phantom",
+      "chromaName": "Level 4 (Bull Finisher)",
+      "icon": "https://media.valorant-api.com/weaponskins/d283626e-41bc-b2b9-e160-c380bbfec2f0/displayicon.png",
+      "buddy": "Immortal Episode 8 Buddy"
+    },
+    "Vandal": {
+      "skinName": "Kuronami Vandal",
+      "chromaName": "Level 4 Storm Water Finisher",
+      "icon": "https://media.valorant-api.com/weaponskins/f4a0c8ce-4122-38d0-062a-dc853efaa76f/displayicon.png",
+      "buddy": "Radianite Orb Buddy"
+    },
+    "Marshal": {
+      "skinName": "Kuronami Marshal",
+      "chromaName": "Level 4 Rain Variant",
+      "icon": "https://media.valorant-api.com/weaponskins/5c9860b8-4c9f-3536-f08a-669bfe38a6a2/displayicon.png",
+      "buddy": null
+    },
+    "Outlaw": {
+      "skinName": "Ego Outlaw",
+      "chromaName": "White / Gold",
+      "icon": "https://media.valorant-api.com/weaponskins/5c9860b8-4c9f-3536-f08a-669bfe38a6a2/displayicon.png",
+      "buddy": null
+    },
+    "Operator": {
+      "skinName": "Araxys Operator",
+      "chromaName": "Level 4 Alien Transform Finisher",
+      "icon": "https://media.valorant-api.com/weaponskins/8180e03e-461b-90f7-1dc0-5bbcd9e7a911/displayicon.png",
+      "buddy": "Immortal 2 Gunbuddy"
+    },
+    "Ares": {
+      "skinName": "Singularity Ares",
+      "chromaName": "Black Hole Finisher",
+      "icon": "https://media.valorant-api.com/weaponskins/f4a0c8ce-4122-38d0-062a-dc853efaa76f/displayicon.png",
+      "buddy": null
+    },
+    "Odin": {
+      "skinName": "Reaver Odin",
+      "chromaName": "Level 4 Bell Toll",
+      "icon": "https://media.valorant-api.com/weaponskins/3c501170-4966-5120-d3ff-e18e87498c8c/displayicon.png",
+      "buddy": null
+    },
+    "Melee": {
+      "skinName": "Kuronami no Yaiba",
+      "chromaName": "Level 2 Twin Blade Dual Wield",
+      "icon": "https://media.valorant-api.com/weaponskins/8316c024-4f05-4f40-333e-108b3a0a383b/displayicon.png",
+      "buddy": null
+    }
+  },
+  "identity": {
+    "playerCard": "Champions 2024 Player Card",
+    "cardWide": "https://media.valorant-api.com/playercards/e8787c31-4a39-9636-94a5-77b298d26ba7/wideart.png",
+    "playerTitle": "Radiant Analyst",
+    "spray": "Nice Try! Animated Spray",
+    "levelBorder": "Level 150+ Obsidian Tier"
+  }
+}

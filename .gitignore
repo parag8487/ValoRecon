@@ -1,0 +1,14 @@
+node_modules/
+dist/
+build/
+.env
+.env.*
+!.env.example
+_build/
+*.log
+# Runtime state + secrets (AI key, autopick, analysis reports, feedback)
+server/data/
+local-data/
+target/
+src-tauri/target/
+

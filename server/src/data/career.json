@@ -1,0 +1,93 @@
+{
+  "player": {
+    "name": "Chronos",
+    "tag": "VALO",
+    "title": "Radiant Analyst",
+    "accountLevel": 184,
+    "cardUrl": "https://media.valorant-api.com/playercards/33c7c404-4401-a0dc-1926-2d887a02c892/wideart.png",
+    "smallCardUrl": "https://media.valorant-api.com/playercards/33c7c404-4401-a0dc-1926-2d887a02c892/smallart.png",
+    "avatarUrl": "https://media.valorant-api.com/playercards/33c7c404-4401-a0dc-1926-2d887a02c892/displayicon.png"
+  },
+  "rank": {
+    "tier": 25,
+    "tierName": "Immortal 2",
+    "tierDivision": 2,
+    "rr": 78,
+    "maxRr": 100,
+    "peakTier": 26,
+    "peakTierName": "Immortal 3 (185 RR)",
+    "tierIcon": "https://media.valorant-api.com/competitivetiers/03621f52-4cd8-5eab-4e09-9889632f576d/25/largeicon.png",
+    "leaderboardRank": 4120
+  },
+  "stats": {
+    "winRate": 58.4,
+    "wins": 83,
+    "losses": 59,
+    "totalMatches": 142,
+    "kd": 1.28,
+    "kills": 2740,
+    "deaths": 2140,
+    "assists": 892,
+    "headshotPct": 29.4,
+    "bodyPct": 64.2,
+    "legPct": 6.4,
+    "damagePerRound": 162.8,
+    "combatScore": 254.6,
+    "clutchSuccessPct": 34.2,
+    "firstBloodsPerMatch": 3.8,
+    "aces": 9,
+    "flawlessRounds": 42
+  },
+  "recentForm": ["W", "W", "L", "W", "W", "W", "L", "W"],
+  "topAgents": [
+    {
+      "agentName": "Jett",
+      "role": "Duelist",
+      "matches": 54,
+      "winRate": 63.0,
+      "kd": 1.36,
+      "adr": 174.5,
+      "iconUrl": "https://media.valorant-api.com/agents/add6443a-41bd-e414-f6ad-e58d267f4e95/displayicon.png",
+      "portraitUrl": "https://media.valorant-api.com/agents/add6443a-41bd-e414-f6ad-e58d267f4e95/fullportrait.png"
+    },
+    {
+      "agentName": "Omen",
+      "role": "Controller",
+      "matches": 38,
+      "winRate": 57.9,
+      "kd": 1.18,
+      "adr": 148.2,
+      "iconUrl": "https://media.valorant-api.com/agents/8e253930-4c05-31dd-1b6c-968525494517/displayicon.png",
+      "portraitUrl": "https://media.valorant-api.com/agents/8e253930-4c05-31dd-1b6c-968525494517/fullportrait.png"
+    },
+    {
+      "agentName": "Sova",
+      "role": "Initiator",
+      "matches": 28,
+      "winRate": 53.6,
+      "kd": 1.12,
+      "adr": 144.0,
+      "iconUrl": "https://media.valorant-api.com/agents/320b2a48-4d9b-a075-30f1-1f93a9b638fa/displayicon.png",
+      "portraitUrl": "https://media.valorant-api.com/agents/320b2a48-4d9b-a075-30f1-1f93a9b638fa/fullportrait.png"
+    },
+    {
+      "agentName": "Cypher",
+      "role": "Sentinel",
+      "matches": 22,
+      "winRate": 59.1,
+      "kd": 1.21,
+      "adr": 151.3,
+      "iconUrl": "https://media.valorant-api.com/agents/117ed9e3-49f3-6512-3ccf-0cada7e3823b/displayicon.png",
+      "portraitUrl": "https://media.valorant-api.com/agents/117ed9e3-49f3-6512-3ccf-0cada7e3823b/fullportrait.png"
+    }
+  ],
+  "mapWinRates": [
+    { "mapName": "Ascent", "matches": 26, "winRate": 65.4, "kd": 1.34 },
+    { "mapName": "Bind", "matches": 22, "winRate": 59.1, "kd": 1.25 },
+    { "mapName": "Haven", "matches": 24, "winRate": 62.5, "kd": 1.31 },
+    { "mapName": "Lotus", "matches": 20, "winRate": 55.0, "kd": 1.20 },
+    { "mapName": "Sunset", "matches": 18, "winRate": 50.0, "kd": 1.15 },
+    { "mapName": "Split", "matches": 16, "winRate": 56.3, "kd": 1.22 },
+    { "mapName": "Abyss", "matches": 16, "winRate": 50.0, "kd": 1.19 }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "dailies": [
+    {
+      "id": "daily-1",
+      "title": "Headhunter",
+      "description": "Score 10 headshots in any game mode",
+      "progress": 8,
+      "maxProgress": 10,
+      "xpReward": 2000,
+      "apReward": 1000,
+      "completed": false,
+      "expiresInSeconds": 48200
+    },
+    {
+      "id": "daily-2",
+      "title": "Arsenal Mastery",
+      "description": "Purchase 15 weapons or shields during buy phases",
+      "progress": 15,
+      "maxProgress": 15,
+      "xpReward": 2000,
+      "apReward": 1000,
+      "completed": true,
+      "expiresInSeconds": 48200
+    },
+    {
+      "id": "daily-3",
+      "title": "Tactical Deployment",
+      "description": "Use your agent abilities 20 times",
+      "progress": 20,
+      "maxProgress": 20,
+      "xpReward": 2000,
+      "apReward": 1000,
+      "completed": true,
+      "expiresInSeconds": 48200
+    },
+    {
+      "id": "daily-4",
+      "title": "Demolition Crew",
+      "description": "Plant or defuse 2 spikes in Competitive or Unrated",
+      "progress": 1,
+      "maxProgress": 2,
+      "xpReward": 2000,
+      "apReward": 1000,
+      "completed": false,
+      "expiresInSeconds": 48200
+    }
+  ],
+  "weeklies": [
+    {
+      "id": "weekly-1",
+      "title": "Round Conqueror",
+      "description": "Win 25 rounds in Competitive or Unrated",
+      "progress": 18,
+      "maxProgress": 25,
+      "xpReward": 19800,
+      "completed": false,
+      "expiresInSeconds": 394000
+    },
+    {
+      "id": "weekly-2",
+      "title": "High Caliber Damage",
+      "description": "Deal 18,000 total damage across all modes",
+      "progress": 14250,
+      "maxProgress": 18000,
+      "xpReward": 19800,
+      "completed": false,
+      "expiresInSeconds": 394000
+    },
+    {
+      "id": "weekly-3",
+      "title": "Ultimate Overcharge",
+      "description": "Cast your ultimate ability 15 times",
+      "progress": 15,
+      "maxProgress": 15,
+      "xpReward": 19800,
+      "completed": true,
+      "expiresInSeconds": 394000
+    }
+  ]
+}

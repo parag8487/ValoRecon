@@ -1,0 +1,100 @@
+{
+  "actName": "Active Battlepass",
+  "currentTier": 38,
+  "maxTier": 50,
+  "epilogueTiers": 5,
+  "currentTierProgressXP": 18400,
+  "tierRequiredXP": 24000,
+  "totalXPAccumulated": 748000,
+  "isPremium": true,
+  "seasonProgressPct": 76.0,
+  "featuredRewards": [
+    {
+      "tier": 50,
+      "name": "Spellbinder Dagger (Melee)",
+      "type": "Melee Weapon",
+      "icon": "https://media.valorant-api.com/weaponskinlevels/5665d2db-49f3-4b39-eebf-62a5af424308/displayicon.png",
+      "isFree": false
+    },
+    {
+      "tier": 45,
+      "name": "Overlay Vandal",
+      "type": "Rifle Skin",
+      "icon": "https://media.valorant-api.com/weaponskinlevels/5f86ac54-46b0-806f-f200-dd89fbcd7cb9/displayicon.png",
+      "isFree": false
+    },
+    {
+      "tier": 50,
+      "name": "Episode 9 Epilogue Gold Gunbuddy",
+      "type": "Gunbuddy",
+      "icon": "https://media.valorant-api.com/weaponskinlevels/7e323e82-44b6-1711-2028-10af32c632d5/displayicon.png",
+      "isFree": true
+    }
+  ],
+  "tiers": [
+    {
+      "tier": 35,
+      "name": "Polyfrog Sheriff",
+      "type": "Skin",
+      "isFree": false,
+      "claimed": true,
+      "icon": "https://media.valorant-api.com/weaponskinlevels/89baf0f4-4648-69fc-f0af-2fbc69b97b80/displayicon.png"
+    },
+    {
+      "tier": 36,
+      "name": "10 Radianite Points",
+      "type": "Currency",
+      "isFree": true,
+      "claimed": true,
+      "icon": "https://media.valorant-api.com/sprays/3d2bcfc5-442b-812e-3c08-9180d6b36077/fulltransparenticon.png"
+    },
+    {
+      "tier": 37,
+      "name": "Tactibear Hug Spray",
+      "type": "Spray",
+      "isFree": false,
+      "claimed": true,
+      "icon": "https://media.valorant-api.com/buddies/b7a9cf2e-4488-88b9-a2c0-ed88fb189e9b/displayicon.png"
+    },
+    {
+      "tier": 38,
+      "name": "Overlay Phantom",
+      "type": "Skin",
+      "isFree": false,
+      "claimed": true,
+      "icon": "https://media.valorant-api.com/playercards/fca32892-4f2f-228b-0f5c-209ad50199b3/displayicon.png"
+    },
+    {
+      "tier": 39,
+      "name": "Clutch King Player Card",
+      "type": "Card",
+      "isFree": false,
+      "claimed": false,
+      "icon": "https://media.valorant-api.com/weaponskinlevels/162beb92-4ab7-4383-da51-4b94ba90bd5d/displayicon.png"
+    },
+    {
+      "tier": 40,
+      "name": "Overlay Guardian",
+      "type": "Skin",
+      "isFree": true,
+      "claimed": false,
+      "icon": "https://media.valorant-api.com/sprays/83cf10b1-42ef-e339-97c6-169f46504733/fulltransparenticon.png"
+    },
+    {
+      "tier": 45,
+      "name": "Overlay Vandal",
+      "type": "Skin",
+      "isFree": false,
+      "claimed": false,
+      "icon": "https://media.valorant-api.com/buddies/18d1fb2d-43cf-e277-16b3-7d8ba5a2d7ce/displayicon.png"
+    },
+    {
+      "tier": 50,
+      "name": "Spellbinder Dagger",
+      "type": "Melee",
+      "isFree": false,
+      "claimed": false,
+      "icon": "https://media.valorant-api.com/playercards/d14c070e-4f7a-8ab1-350e-199af481d32a/displayicon.png"
+    }
+  ]
+}

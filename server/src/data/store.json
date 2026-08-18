@@ -1,0 +1,156 @@
+{
+  "featuredBundle": {
+    "bundleUuid": "bundle-kuronami",
+    "displayName": "Kuronami Collection",
+    "displayIcon": "https://media.valorant-api.com/bundles/35815cab-429d-79e4-43f5-e0af8fdac22b/displayicon.png",
+    "verticalPromoImage": "https://media.valorant-api.com/bundles/35815cab-429d-79e4-43f5-e0af8fdac22b/verticalpromoimage.png",
+    "description": "Master the ancient water blade arts with fluid strikes and storm effects.",
+    "priceVP": 9500,
+    "originalPriceVP": 14200,
+    "discountPct": 33,
+    "durationRemainingSeconds": 582400,
+    "items": [
+      {
+        "name": "Kuronami Vandal",
+        "weapon": "Vandal",
+        "priceVP": 2375,
+        "icon": "https://media.valorant-api.com/weaponskins/f4a0c8ce-4122-38d0-062a-dc853efaa76f/displayicon.png"
+      },
+      {
+        "name": "Kuronami no Yaiba (Melee)",
+        "weapon": "Melee",
+        "priceVP": 5350,
+        "icon": "https://media.valorant-api.com/weaponskins/8316c024-4f05-4f40-333e-108b3a0a383b/displayicon.png"
+      },
+      {
+        "name": "Kuronami Sheriff",
+        "weapon": "Sheriff",
+        "priceVP": 2375,
+        "icon": "https://media.valorant-api.com/weaponskins/22c06950-482a-e889-4977-cfb53b81ebaa/displayicon.png"
+      },
+      {
+        "name": "Kuronami Spectre",
+        "weapon": "Spectre",
+        "priceVP": 2375,
+        "icon": "https://media.valorant-api.com/weaponskins/cbe532f5-46eb-4604-8176-aeb56157fbe1/displayicon.png"
+      },
+      {
+        "name": "Kuronami Marshal",
+        "weapon": "Marshal",
+        "priceVP": 2375,
+        "icon": "https://media.valorant-api.com/weaponskins/5c9860b8-4c9f-3536-f08a-669bfe38a6a2/displayicon.png"
+      }
+    ]
+  },
+  "dailyOffers": [
+    {
+      "id": "skin-reaver-vandal",
+      "name": "Reaver Vandal",
+      "weapon": "Vandal",
+      "priceVP": 1775,
+      "tier": "Premium",
+      "tierColor": "#d1548d",
+      "icon": "https://media.valorant-api.com/weaponskins/3c501170-4966-5120-d3ff-e18e87498c8c/displayicon.png"
+    },
+    {
+      "id": "skin-prime-phantom",
+      "name": "Prime//2.0 Phantom",
+      "weapon": "Phantom",
+      "priceVP": 1775,
+      "tier": "Premium",
+      "tierColor": "#d1548d",
+      "icon": "https://media.valorant-api.com/weaponskins/d283626e-41bc-b2b9-e160-c380bbfec2f0/displayicon.png"
+    },
+    {
+      "id": "skin-araxys-op",
+      "name": "Araxys Operator",
+      "weapon": "Operator",
+      "priceVP": 2175,
+      "tier": "Exclusive",
+      "tierColor": "#f8b73e",
+      "icon": "https://media.valorant-api.com/weaponskins/8180e03e-461b-90f7-1dc0-5bbcd9e7a911/displayicon.png"
+    },
+    {
+      "id": "skin-sovereign-ghost",
+      "name": "Sovereign Ghost",
+      "weapon": "Ghost",
+      "priceVP": 1775,
+      "tier": "Premium",
+      "tierColor": "#d1548d",
+      "icon": "https://media.valorant-api.com/weaponskins/14bca8db-4e28-2d02-23c2-d3b5b6f37910/displayicon.png"
+    }
+  ],
+  "nightMarket": {
+    "isActive": true,
+    "durationRemainingSeconds": 842000,
+    "offers": [
+      {
+        "id": "nm-1",
+        "name": "Ion Vandal",
+        "weapon": "Vandal",
+        "originalPriceVP": 1775,
+        "discountPriceVP": 1242,
+        "discountPct": 30,
+        "tier": "Premium",
+        "isRevealed": true,
+        "icon": "https://media.valorant-api.com/weaponskins/5a4437a3-41bb-1090-e55d-ca9d7f9559c5/displayicon.png"
+      },
+      {
+        "id": "nm-2",
+        "name": "Oni Phantom",
+        "weapon": "Phantom",
+        "originalPriceVP": 1775,
+        "discountPriceVP": 1065,
+        "discountPct": 40,
+        "tier": "Premium",
+        "isRevealed": true,
+        "icon": "https://media.valorant-api.com/weaponskins/68c8b4fb-4b5b-01ee-c3cf-e7a974bfa2be/displayicon.png"
+      },
+      {
+        "id": "nm-3",
+        "name": "Magepunk Sheriff",
+        "weapon": "Sheriff",
+        "originalPriceVP": 1775,
+        "discountPriceVP": 1331,
+        "discountPct": 25,
+        "tier": "Premium",
+        "isRevealed": true,
+        "icon": "https://media.valorant-api.com/weaponskins/27a94f06-4076-79cf-cae2-4ea583a48e71/displayicon.png"
+      },
+      {
+        "id": "nm-4",
+        "name": "Xenohunter Knife",
+        "weapon": "Melee",
+        "originalPriceVP": 3550,
+        "discountPriceVP": 2130,
+        "discountPct": 40,
+        "tier": "Exclusive",
+        "isRevealed": true,
+        "icon": "https://media.valorant-api.com/weaponskins/5c94bb50-482a-0a25-c65d-bf9ef95927ad/displayicon.png"
+      },
+      {
+        "id": "nm-5",
+        "name": "Gaia's Vengeance Ghost",
+        "weapon": "Ghost",
+        "originalPriceVP": 1775,
+        "discountPriceVP": 1153,
+        "discountPct": 35,
+        "tier": "Premium",
+        "isRevealed": false,
+        "icon": "https://media.valorant-api.com/weaponskins/9cbe7d08-4171-cb86-2a32-15a0c306faef/displayicon.png"
+      },
+      {
+        "id": "nm-6",
+        "name": "Neptune Spectre",
+        "weapon": "Spectre",
+        "originalPriceVP": 1775,
+        "discountPriceVP": 1242,
+        "discountPct": 30,
+        "tier": "Premium",
+        "isRevealed": false,
+        "icon": "https://media.valorant-api.com/weaponskins/3c051a3d-4c31-c4be-a6b1-09854736f86d/displayicon.png"
+      }
+    ]
+  },
+  "resetTimeRemainingSeconds": 48210
+}
