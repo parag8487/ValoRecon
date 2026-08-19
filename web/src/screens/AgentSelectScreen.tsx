@@ -28,6 +28,7 @@ import {
   saveAutoPickSettings,
   selectAgentAction,
   lockAgentAction,
+  getUnlockedAgents,
   AutoPickSettings
 } from '../api/client';
 
@@ -73,15 +74,21 @@ export const AgentSelectScreen: React.FC = () => {
   const [recommendations, setRecommendations] = useState<AgentAdvisorResponse | null>(null);
   const [advisorLoading, setAdvisorLoading] = useState(false);
 
-  // Load agents and sync with backend persistent state on mount
+  // Load agents and sync with live entitlements on mount
   useEffect(() => {
-    getAgents().then((agents) => {
-      setAllAgents(agents);
+    Promise.all([getAgents(), getUnlockedAgents().catch(() => [])]).then(([agents, unlockedUuids]) => {
+      const unlockedSet = new Set((unlockedUuids || []).map((u: string) => u.toLowerCase()));
+      const mergedAgents = agents.map((a) => ({
+        ...a,
+        unlocked: unlockedSet.size > 0 ? (unlockedSet.has(a.uuid.toLowerCase()) || a.unlocked === true) : a.unlocked
+      }));
+      setAllAgents(mergedAgents);
+
       // If no agent selected or invalid, default to an unlocked agent (e.g. Sova or Jett)
-      if (agents.length > 0 && !autoPick.agentUuid) {
-        const defaultAgent = agents.find((a) => a.displayName === 'Sova' && a.unlocked !== false) ||
-                             agents.find((a) => a.unlocked !== false) ||
-                             agents[0];
+      if (mergedAgents.length > 0 && !autoPick.agentUuid) {
+        const defaultAgent = mergedAgents.find((a) => a.displayName === 'Sova' && a.unlocked !== false) ||
+                             mergedAgents.find((a) => a.unlocked !== false) ||
+                             mergedAgents[0];
         const updated = {
           ...autoPick,
           agentUuid: defaultAgent.uuid,
@@ -104,7 +111,7 @@ export const AgentSelectScreen: React.FC = () => {
     }).catch(console.error);
   }, []);
 
-  // Poll pregame and live status every 2 seconds
+  // Poll pregame and live status every 2 seconds & sync entitlements periodically
   useEffect(() => {
     const pollPregame = () => {
       getRiotPregame().then((data) => {
@@ -125,9 +132,28 @@ export const AgentSelectScreen: React.FC = () => {
       }).catch(() => {});
     };
 
+    const syncUnlocked = () => {
+      getUnlockedAgents().then((unlockedUuids) => {
+        if (Array.isArray(unlockedUuids) && unlockedUuids.length > 0) {
+          const unlockedSet = new Set(unlockedUuids.map((u: string) => u.toLowerCase()));
+          setAllAgents((prev) =>
+            prev.map((a) => ({
+              ...a,
+              unlocked: unlockedSet.has(a.uuid.toLowerCase()) || a.unlocked === true
+            }))
+          );
+        }
+      }).catch(() => {});
+    };
+
     pollPregame();
+    syncUnlocked();
     const interval = setInterval(pollPregame, 2000);
-    return () => clearInterval(interval);
+    const unlockedInterval = setInterval(syncUnlocked, 10000);
+    return () => {
+      clearInterval(interval);
+      clearInterval(unlockedInterval);
+    };
   }, [autoPick.matchState]);
 
   const updateConfig = async (updated: AutoPickSettings) => {

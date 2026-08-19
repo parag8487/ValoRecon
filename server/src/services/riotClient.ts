@@ -2188,21 +2188,42 @@ export async function fetchUnlockedAgentUuids(): Promise<string[]> {
   const session = await getRiotSession();
   if (!session) return baseStarterUuids;
 
-  try {
-    const res = await makePvpRequest<any>(
-      `/store/v1/entitlements/${session.puuid}/01a42a0a-4763-32c4-ad9f-b7976d853a47`
-    );
-    const unlocked = new Set<string>(baseStarterUuids.map((u) => u.toLowerCase()));
+  const unlocked = new Set<string>(baseStarterUuids.map((u) => u.toLowerCase()));
 
-    if (res.status === 200 && res.data?.Entitlements) {
-      for (const item of res.data.Entitlements) {
-        if (item.ItemID) unlocked.add(item.ItemID.toLowerCase());
+  // In Riot PVP API, agent character itemType is '01b69dae-ade9-4634-8c66-3c97c80cdbe7'
+  const itemTypeIds = [
+    '01b69dae-ade9-4634-8c66-3c97c80cdbe7',
+    '01a42a0a-4763-32c4-ad9f-b7976d853a47'
+  ];
+
+  for (const itemTypeId of itemTypeIds) {
+    try {
+      const res = await makePvpRequest<any>(
+        `/store/v1/entitlements/${session.puuid}/${itemTypeId}`
+      );
+      if (res.status === 200 && res.data?.Entitlements) {
+        for (const item of res.data.Entitlements) {
+          if (item.ItemID) unlocked.add(item.ItemID.toLowerCase());
+        }
+      }
+    } catch (e) {}
+  }
+
+  // Also query full entitlements if available
+  try {
+    const res = await makePvpRequest<any>(`/store/v1/entitlements/${session.puuid}`);
+    if (res.status === 200 && res.data?.EntitlementsByTypes) {
+      for (const group of res.data.EntitlementsByTypes) {
+        if (group.Entitlements) {
+          for (const item of group.Entitlements) {
+            if (item.ItemID) unlocked.add(item.ItemID.toLowerCase());
+          }
+        }
       }
     }
-    return Array.from(unlocked);
-  } catch (e) {
-    return baseStarterUuids;
-  }
+  } catch (e) {}
+
+  return Array.from(unlocked);
 }
 
 export async function selectAgent(agentUuid: string) {
