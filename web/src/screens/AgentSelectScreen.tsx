@@ -78,9 +78,16 @@ export const AgentSelectScreen: React.FC = () => {
   useEffect(() => {
     Promise.all([getAgents(), getUnlockedAgents().catch(() => [])]).then(([agents, unlockedUuids]) => {
       const unlockedSet = new Set((unlockedUuids || []).map((u: string) => u.toLowerCase()));
+      const CORE_UNLOCKED = new Set([
+        'jett', 'phoenix', 'sova', 'sage', 'brimstone',
+        'reyna', 'omen', 'cypher', 'raze', 'killjoy'
+      ]);
+
       const mergedAgents = agents.map((a) => ({
         ...a,
-        unlocked: unlockedSet.size > 0 ? (unlockedSet.has(a.uuid.toLowerCase()) || a.unlocked === true) : a.unlocked
+        unlocked: a.unlocked === true ||
+                  unlockedSet.has(a.uuid.toLowerCase()) ||
+                  CORE_UNLOCKED.has(a.displayName?.toLowerCase())
       }));
       setAllAgents(mergedAgents);
 
@@ -136,10 +143,17 @@ export const AgentSelectScreen: React.FC = () => {
       getUnlockedAgents().then((unlockedUuids) => {
         if (Array.isArray(unlockedUuids) && unlockedUuids.length > 0) {
           const unlockedSet = new Set(unlockedUuids.map((u: string) => u.toLowerCase()));
+          const CORE_UNLOCKED = new Set([
+            'jett', 'phoenix', 'sova', 'sage', 'brimstone',
+            'reyna', 'omen', 'cypher', 'raze', 'killjoy'
+          ]);
+
           setAllAgents((prev) =>
             prev.map((a) => ({
               ...a,
-              unlocked: unlockedSet.has(a.uuid.toLowerCase()) || a.unlocked === true
+              unlocked: a.unlocked === true ||
+                        unlockedSet.has(a.uuid.toLowerCase()) ||
+                        CORE_UNLOCKED.has(a.displayName?.toLowerCase())
             }))
           );
         }

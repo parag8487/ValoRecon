@@ -9,10 +9,16 @@ router.get('/agents', async (_req: Request, res: Response) => {
     const agents = await getAgents();
     const unlockedUuids = await fetchUnlockedAgentUuids().catch(() => []);
     const unlockedSet = new Set(unlockedUuids.map((u: string) => u.toLowerCase()));
+    const CORE_UNLOCKED = new Set([
+      'jett', 'phoenix', 'sova', 'sage', 'brimstone',
+      'reyna', 'omen', 'cypher', 'raze', 'killjoy'
+    ]);
 
     const enriched = agents.map((a: any) => ({
       ...a,
-      unlocked: a.isBaseContent || unlockedSet.has(a.uuid.toLowerCase())
+      unlocked: a.isBaseContent ||
+                unlockedSet.has(a.uuid.toLowerCase()) ||
+                CORE_UNLOCKED.has(a.displayName?.toLowerCase())
     }));
 
     res.json(enriched);
