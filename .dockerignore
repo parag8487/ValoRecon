@@ -1,0 +1,21 @@
+# Version history contains every secret ever committed, including the ones since removed.
+.git
+.gitignore
+
+# Local credentials. A bare `COPY . .` bakes these into a layer that survives being overwritten.
+.env
+.env.*
+!.env.example
+
+# Build and test output: large, machine-specific, and rebuilt inside the image anyway.
+Dockerfile
+.dockerignore
+README.md
+*.md
+
+node_modules
+npm-debug.log*
+coverage
+dist
+build
+.next

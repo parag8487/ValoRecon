@@ -1,0 +1,30 @@
+# Patterns Helm must not treat as chart content. When this file exists Helm does not also apply
+# its built-in defaults, so the conventional entries are repeated here rather than assumed.
+
+# Version control and editor litter
+.git/
+.gitignore
+.DS_Store
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Merge and conflict artifacts, which carry no valid extension
+*.orig
+*.rej
+*.bak
+
+# This platform's own pre-images. They live under .forgeops-rollback at the workspace root rather than
+# beside their targets, and this entry is the second line of defence for a chart restored from an older
+# layout where they did not.
+*.backup.*
+.forgeops-rollback/
+
+# Build output and dependencies
+node_modules/
+__pycache__/
+*.py[cod]
+dist/
+build/

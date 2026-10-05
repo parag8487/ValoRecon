@@ -1,0 +1,47 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: valorecon
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: valorecon
+  template:
+    metadata:
+      labels:
+        app: valorecon
+    spec:
+      containers:
+        - name: valorecon
+          image: valorecon:0.1.0
+          ports:
+            - containerPort: 8799
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - analysis:
+            templates:
+              - templateName: valorecon-canary-analysis
+            args:
+              - name: canary-weight
+                value: "20"
+        - setWeight: 50
+        - analysis:
+            templates:
+              - templateName: valorecon-canary-analysis
+            args:
+              - name: canary-weight
+                value: "50"
+        - setWeight: 80
+        - analysis:
+            templates:
+              - templateName: valorecon-canary-analysis
+            args:
+              - name: canary-weight
+                value: "80"
+      # An aborted analysis returns traffic to the stable ReplicaSet by itself. There is no
+      # rollback code anywhere in this product for that reason: the controller does it in
+      # milliseconds, and a backend reacting to a webhook would be slower and could disagree.
+      abortScaleDownDelaySeconds: 30

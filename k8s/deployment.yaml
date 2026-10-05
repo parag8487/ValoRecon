@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: valorecon
+  labels:
+    app: valorecon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: valorecon
+  template:
+    metadata:
+      labels:
+        app: valorecon
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+      containers:
+        - name: app
+          image: valorecon:0.1.0
+          ports:
+            - containerPort: 8799
+          # Requests are what the scheduler reserves; limits are what stops this container
+          # taking the node. Tune both to the workload's measured usage.
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          # Without probes a wedged container keeps receiving traffic, because nothing asks it.
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8799
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8799
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - "ALL"
