@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: valorecon-canary-analysis
+spec:
+  metrics:
+    # BOTH METRICS ARE REQUIRED. A release can be fast and broken (500s returned in two
+    # milliseconds look excellent on a latency panel) or correct and unusable (every
+    # response a 200 after nine seconds). Gating on one admits exactly one of those.
+    - name: error-rate
+      interval: 30s
+      count: 4
+      failureLimit: 1
+      # An idle service makes this 0/0 = NaN, which Rollouts treats as INCONCLUSIVE rather
+      # than as a pass. That is deliberate: an unmeasured canary must not be promoted.
+      successCondition: result[0] <= 0.01
+      provider:
+        prometheus:
+          address: http://prometheus-operated.monitoring.svc.cluster.local:9090
+          query: >-
+            sum(rate(http_requests_total{service="valorecon",status=~"5.."}[30s])) / sum(rate(http_requests_total{service="valorecon"}[30s]))
+    - name: p95-latency-seconds
+      interval: 30s
+      count: 4
+      failureLimit: 1
+      successCondition: result[0] <= 0.5
+      provider:
+        prometheus:
+          address: http://prometheus-operated.monitoring.svc.cluster.local:9090
+          query: >-
+            histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{service="valorecon"}[30s])) by (le))

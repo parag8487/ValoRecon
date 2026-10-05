@@ -1,0 +1,32 @@
+---
+replicaCount: 1
+
+image:
+  repository: valorecon
+  # An explicit tag, not `latest`: two installs of one chart must deploy the same code.
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8799
+
+# A starting point, not a measurement. Requests are what the scheduler reserves; limits are what stop
+# this container taking the node. Tune both once the workload's real usage is known.
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+# Probe path `/` because nothing here knows the application serves a dedicated health route, and a probe
+# pointed at a 404 restarts a healthy container forever.
+probes:
+  path: /
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  allowPrivilegeEscalation: false

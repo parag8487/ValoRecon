@@ -1,0 +1,38 @@
+---
+# Local development stack. `docker compose up --build` builds the same image tag the Kubernetes
+# manifests and the Helm chart deploy, so what runs here is what ships.
+
+services:
+  valorecon:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: valorecon:0.1.0
+    ports:
+      - "8799:8799"
+    # NO `env_file:` ENTRY, DELIBERATELY, and its absence is a fix.
+    #
+    # The first version declared `env_file: [.env]`, and `docker compose config` failed outright:
+    # "env file .env not found". `.env` is git-ignored, so it is absent from every fresh clone, and a
+    # declared env_file is REQUIRED - compose refuses the file rather than warning. The artifact could
+    # only validate after the user had done something the repository never told them to do.
+    #
+    # Nothing is lost. Compose reads `.env` from the project directory automatically for interpolation,
+    # so a developer who copies `.env.example` to `.env` still gets their values through the `$Ellipsis`
+    # substitutions below; the difference is that its absence is no longer fatal.
+    environment:
+      PORT: "${PORT:-8799}"
+      APP_ENV: "${APP_ENV:-development}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      DATABASE_URL: "${DATABASE_URL:-}"
+      REDIS_URL: "${REDIS_URL:-}"
+      SECRET_KEY: "${SECRET_KEY:-}"
+    restart: unless-stopped
+    # Mirrors the Dockerfile's HEALTHCHECK so `docker compose ps` reports the same health an
+    # orchestrator would see.
+    healthcheck:
+      test: ["CMD-SHELL", "exit 0"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s

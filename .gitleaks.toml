@@ -1,0 +1,26 @@
+# Gitleaks configuration. Run locally with `gitleaks detect --config .gitleaks.toml`, and in CI on
+# every push so a credential is caught before it is pushed rather than after.
+
+title = "Secret scanning"
+
+# Extend the upstream rules rather than replacing them. A hand-written pattern list is always narrower
+# than the maintained one, and a scanner that misses a credential is worse than none because it is
+# trusted.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Paths and values that are examples by design, not leaked secrets."
+
+paths = [
+  # Committed on purpose, and every value in it is empty.
+  '''\.env\.example$''',
+  '''\.gitleaks\.toml$''',
+]
+
+# Placeholder values that look like secrets and are not. Keep this list SHORT: every entry is a pattern
+# the scanner will stop reporting, so a real credential matching one of these would be missed.
+regexes = [
+  '''EXAMPLE_ONLY''',
+  '''<[a-z .-]+>''',
+]

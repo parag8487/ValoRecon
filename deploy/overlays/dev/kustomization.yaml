@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: valorecon-dev
+resources:
+  - ../../../k8s
+labels:
+  - pairs:
+      environment: dev
+configMapGenerator:
+  - name: valorecon-config
+    literals:
+      - APP_ENV=dev
+      - PORT=8799
+      - HOST=0.0.0.0
+      - LOG_LEVEL=debug

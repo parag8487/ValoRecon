@@ -1,0 +1,36 @@
+---
+name: build
+
+# `on` is quoted because YAML 1.1 reads a bare `on` as the boolean true. Unquoted it still works in
+# GitHub Actions, but every linter reports it, so the generated file avoids the argument.
+"on":
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Pinned to a commit SHA rather than a tag: a tag is mutable, so what runs here could change
+      # without this file changing. Update the SHA and the trailing version comment together.
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      # Tests run BEFORE the build. A pipeline that publishes an image and then discovers the tests
+      # fail has already shipped the defect.
+      - name: Run the tests
+        run: npm test --if-present
+
+      # `docker build` rather than a build-push action: no third-party action means nothing to pin and
+      # nothing to trust. The tag matches the manifests and the chart so CI produces what they deploy.
+      - name: Build the image
+        run: docker build -f Dockerfile -t valorecon:0.1.0 .

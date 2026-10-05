@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: valorecon-prod
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/parag8487/ValoRecon.git
+    targetRevision: main
+    path: deploy/overlays/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: valorecon-prod
+  syncPolicy:
+    # NO `automated:` BLOCK. Without it ArgoCD reports drift and waits, which is what this
+    # product wants by default: a sync is a mutation and mutations go through the approval
+    # chokepoint. Add `automated:` when this application's authority genuinely lives in Git.
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+  revisionHistoryLimit: 10
